@@ -11,6 +11,11 @@ from app.services.job_service import seed_if_empty
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
 
+from app.core.logging_filters import RedactFilter  # noqa: E402
+for name in ("", "uvicorn", "uvicorn.error", "uvicorn.access"):
+    for handler in logging.getLogger(name).handlers:
+        handler.addFilter(RedactFilter())
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
