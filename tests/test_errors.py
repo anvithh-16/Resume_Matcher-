@@ -1,4 +1,5 @@
 import logging
+import pytest
 from fastapi.routing import APIRoute
 from app.core.logging_filters import RedactFilter
 from app.main import app
@@ -31,3 +32,27 @@ def test_sr04_access_log_redacted_and_still_formats():
     RedactFilter().filter(rec)
     out = AccessFormatter("%(message)s", use_colors=False).format(rec)
     assert "abc123" not in out and "/api/v1/me" in out
+
+ROUTES = {getattr(r, "path", "") for r in app.routes}
+needs = lambda *paths: pytest.mark.skipif(not set(paths) <= ROUTES,  # noqa: E731
+                                          reason=f"routes not merged yet: {sorted(set(paths) - ROUTES)}")
+
+@needs("/api/v1/resumes")
+def test_tc12_parser_failure_is_safe(client, user_a):
+    r = client.post("/api/v1/resumes", headers=user_a, files={"file": ("cv.pdf", b"%PDF-1.4 broken")})
+    assert r.status_code == 422 and r.json()["error"]["code"] == "parse_failed"
+    assert "Traceback" not in r.text
+
+@needs("/api/v1/consent", "/api/v1/recommendations")
+def test_tc12_provider_timeout_falls_back(client, user_a, create_job, create_resume, monkeypatch):
+    def timeout(_payload):
+        raise TimeoutError("provider slow")
+    monkeypatch.setattr("app.agent.provider._call_provider", timeout)
+    monkeypatch.setattr("app.core.config.EXTERNAL_AI_ENABLED", True)
+    create_job(title="Timeout Job", required_skills=["python"])
+    rid = create_resume("a@test.local", {"skills": ["python"], "raw_text": "python developer"})
+    client.put("/api/v1/consent", headers=user_a, json={"external_ai_enabled": True})
+    r = client.post("/api/v1/recommendations", headers=user_a, json={"resume_id": rid})
+    client.put("/api/v1/consent", headers=user_a, json={"external_ai_enabled": False})
+    assert r.status_code == 200 and "Traceback" not in r.text
+    assert any(rec.get("warnings") for rec in r.json()["recommendations"])
