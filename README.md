@@ -77,6 +77,18 @@ Set in `.env` (see `.env.example`):
 | `TOKEN_MINUTES` | `60` | JWT lifetime |
 | `EXTERNAL_AI_ENABLED` | `false` | Allow the agent to call an external AI provider |
 
+## Deployment (SR-07)
+
+`uvicorn app.main:app --reload` over plain HTTP is for local development only. Any non-localhost deployment must use HTTPS, `APP_ENV=production` and a real `SECRET_KEY`, and must not use `--reload`:
+
+```bash
+export APP_ENV=production
+export SECRET_KEY=$(python -c "import secrets; print(secrets.token_urlsafe(32))")
+uvicorn app.main:app --port 8443 --ssl-keyfile key.pem --ssl-certfile cert.pem
+```
+
+In production the app refuses to start with the default or `.env.example` secret, and `/docs` is hidden. See [docs/SECURITY_CHECKLIST.md](docs/SECURITY_CHECKLIST.md).
+
 ## Running tests
 
 ```bash
@@ -97,3 +109,4 @@ CI runs the same command on every pull request and on pushes to `main`.
 - [Test report](docs/TEST_REPORT.md)
 - [Defect log](docs/DEFECT_LOG.md)
 - [Deviations from SRS / SAD / Test Plan](docs/DEVIATIONS.md)
+- [Deployment security checklist](docs/SECURITY_CHECKLIST.md)
