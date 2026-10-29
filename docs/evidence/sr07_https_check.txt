@@ -1,0 +1,10 @@
+$ curl -k https://localhost:8443/api/v1/health
+{"status":"ok"}
+HTTP 200 scheme=https
+$ curl -k https://localhost:8443/docs
+HTTP 404
+$ curl -k https://localhost:8443/openapi.json
+HTTP 404
+$ curl http://localhost:8443/api/v1/health  (plain HTTP to the TLS port)
+HTTP 000
+connection rejected
