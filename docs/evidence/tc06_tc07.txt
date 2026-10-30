@@ -1,0 +1,35 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.0, pytest-8.3.4, pluggy-1.7.0 -- /Users/anirudhn/SE_Mini_Project/resume-matcher/.venv/bin/python
+rootdir: /Users/anirudhn/SE_Mini_Project/resume-matcher
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collecting ... collected 11 items
+
+tests/test_skills.py::test_normalize_aliases_and_case PASSED             [  9%]
+tests/test_skills.py::test_extract_whole_words_only PASSED               [ 18%]
+tests/test_skills.py::test_extract_from_team_fixture_resume PASSED       [ 27%]
+tests/test_skills.py::test_extract_empty_text PASSED                     [ 36%]
+tests/test_skills.py::test_canonical_names_are_their_own_canon PASSED    [ 45%]
+tests/test_matching.py::test_tc06_range_repeatable_breakdown PASSED      [ 54%]
+tests/test_matching.py::test_tc06_overlap_beats_no_overlap PASSED        [ 63%]
+tests/test_matching.py::test_tc06_no_required_skills_fallback PASSED     [ 72%]
+tests/test_matching.py::test_tc07_gap_and_evidence_only_explanation PASSED [ 81%]
+tests/test_matching.py::test_tc06_api PASSED                             [ 90%]
+tests/test_matching.py::test_tc06_api_other_users_resume_is_404 PASSED   [100%]
+
+=============================== warnings summary ===============================
+.venv/lib/python3.14/site-packages/starlette/testclient.py:40
+  /Users/anirudhn/SE_Mini_Project/resume-matcher/.venv/lib/python3.14/site-packages/starlette/testclient.py:40: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+.venv/lib/python3.14/site-packages/fastapi/routing.py:233: 45 warnings
+  /Users/anirudhn/SE_Mini_Project/resume-matcher/.venv/lib/python3.14/site-packages/fastapi/routing.py:233: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    is_coroutine = asyncio.iscoroutinefunction(dependant.call)
+
+.venv/lib/python3.14/site-packages/starlette/_utils.py:39: 48 warnings
+tests/test_matching.py: 4 warnings
+  /Users/anirudhn/SE_Mini_Project/resume-matcher/.venv/lib/python3.14/site-packages/starlette/_utils.py:39: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    return asyncio.iscoroutinefunction(obj) or (callable(obj) and asyncio.iscoroutinefunction(obj.__call__))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 11 passed, 98 warnings in 0.17s ========================
