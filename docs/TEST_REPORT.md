@@ -1,12 +1,11 @@
 # Test Execution Report
-Environment (fill once): OS, CPU, RAM, Python version, browser versions.
 Environment (Anvith's run): Darwin 27.0.0, arm, Python 3.14.0; full suite 49 passed
 Environment (Anirudh's run): Darwin 27.0.0, arm, Python 3.14.0
 Environment (Ankitha's run): Windows 11, Intel64 Family 6 Model 140 Stepping 1, GenuineIntel, Python 3.13.7
 Status values: Pass / Fail / Blocked / Not run. Never mark a test Pass unless it was run.
 
 | ID | Requirement(s) | Owner | Verified by | Date | Actual result | Status | Evidence | Defect |
-|---|---|---|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | TC-01 | FR-01 | Anvith | Anirudh | 30 Oct 2026 | 1/1 automated checks passed; valid registration 201, duplicate 409, invalid 422 | Pass | docs/evidence/tc01_tc02_sr02.txt |  |
 | TC-02 | FR-02, SR-01 | Anvith | Anirudh | 30 Oct 2026 | 1/1 automated checks passed; valid login gets token, wrong/unknown login same 401, protected route needs token | Pass | docs/evidence/tc01_tc02_sr02.txt |  |
 | SR-02 hash check | SR-02 | Anvith | Anirudh | 30 Oct 2026 | 1/1 automated checks passed; stored value is an $argon2 hash, never the plaintext password | Pass | docs/evidence/tc01_tc02_sr02.txt |  |
@@ -22,12 +21,12 @@ Status values: Pass / Fail / Blocked / Not run. Never mark a test Pass unless it
 | TC-12 | FR-14, SR-04 | Anvith | Anirudh | 30 Oct 2026 | 6/6 automated checks passed; unexpected error -> 500 with request ID, no stack trace or secret; parser/provider failures safe; logs redacted | Pass | docs/evidence/tc12.txt |  |
 | TC-13 | FR-13, SR-06 | Anirudh | Ankitha | 30 Oct 2026 | 3/3 automated checks passed; no external call without config + consent, only minimized fields sent, failure falls back | Pass | docs/evidence/tc08_tc13.txt |  |
 | TC-14 | NFR-03 | Anirudh | Ankitha | 30 Oct 2026 | 100/100 valid match results (target >= 99) | Pass | docs/evidence/tc14.txt |  |
-| TC-15 | NFR-04, NFR-08 | Ankitha | Anvith | 30 Oct 2026 | Keyboard + Lighthouse: see nfr08_lighthouse.txt; usability: see USABILITY.md | <set Pass/Fail> | docs/evidence/nfr08_lighthouse.txt, docs/USABILITY.md |  |
+| TC-15 | NFR-04, NFR-08 | Ankitha | Anvith | 30 Oct 2026 | Keyboard-only journey OK and Lighthouse accessibility 100 on all 7 pages (Chrome); 5-user usability study not conducted (DEVIATIONS.md) | Partial | docs/evidence/nfr08_lighthouse.txt, docs/USABILITY.md |  |
 | FR-15 import | FR-15 | Ankitha | Anvith | 30 Oct 2026 | 2/2 automated checks passed; non-admin 403, invalid batch rejected, import/update/deactivate audited | Pass | docs/evidence/fr15.txt |  |
 | NFR-02 load | NFR-02 | Anirudh | Ankitha | 30 Oct 2026 | p95 1.334 s over 200 requests, 20 users, no external provider (target <= 10 s) | Pass | docs/evidence/nfr02_match_load.txt |  |
 | NFR-05 browsers | NFR-05 | Ankitha | Anvith | 30 Oct 2026 | Full journey works in Chrome; Firefox not tested (see DEVIATIONS.md) | Partial | docs/evidence/nfr05_browsers.txt |  |
-| NFR-06 module review | NFR-06 | Anvith | Anirudh | 30 Oct 2026 | Routes, services, data access, matching and agent in separate modules; 5 service modules, all exercised by tests except job_service | Partial | docs/evidence/nfr06_module_review.txt |  |
+| NFR-06 module review | NFR-06 | Anvith | Anirudh | 30 Oct 2026 | Routes, services, data access, matching and agent in separate modules; all 5 service modules covered by tests (job_service via test_jobs.py and test_admin.py API tests) | Pass | docs/evidence/nfr06_module_review.txt |  |
 | NFR-07 deletion | NFR-07 | Ankitha | Anvith | 30 Oct 2026 | 1/1 automated checks passed; deleted resume returns 404 and its file is removed | Pass | docs/evidence/tc03_tc04_nfr07.txt |  |
-| NFR-09 clean setup | NFR-09 | Anvith | Anirudh | 30 Oct 2026 | Fresh clone + README steps on a clean folder: 49 passed (run as python -m pytest -q)| PASS | docs/evidence/full_suite.txt |  |
-| SR-07/SR-08 checklist | SR-07, SR-08 | Anvith | Anirudh | 30 Oct 2026 | <fill: see docs/SECURITY_CHECKLIST.md results> | <set Pass/Partial/Fail> | docs/SECURITY_CHECKLIST.md |  |
+| NFR-09 clean setup | NFR-09 | Anvith | Anirudh | 30 Oct 2026 | Fresh clone + README steps on a clean folder: 49 passed (run as python -m pytest -q) | Pass | docs/evidence/full_suite.txt |  |
+| SR-07/SR-08 checklist | SR-07, SR-08 | Anvith | Anirudh | 30 Oct 2026 | 9/9 deployment security checks passed (see SECURITY_CHECKLIST.md) | Pass | docs/SECURITY_CHECKLIST.md |  |
 
