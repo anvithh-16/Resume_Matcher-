@@ -1,0 +1,32 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.0, pytest-8.3.4, pluggy-1.7.0 -- /Users/anirudhn/SE_Mini_Project/resume-matcher/.venv/bin/python
+rootdir: /Users/anirudhn/SE_Mini_Project/resume-matcher
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collecting ... collected 8 items
+
+tests/test_agent.py::test_tc08_workflow_runs_planned_tools PASSED        [ 12%]
+tests/test_agent.py::test_tc08_unknown_tool_and_bad_arguments_rejected PASSED [ 25%]
+tests/test_agent.py::test_tc08_prompt_injection_changes_nothing PASSED   [ 37%]
+tests/test_agent.py::test_tc08_no_skills_gives_guidance PASSED           [ 50%]
+tests/test_agent.py::test_tc08_other_users_resume_is_404 PASSED          [ 62%]
+tests/test_agent.py::test_tc13_no_external_transfer_without_consent PASSED [ 75%]
+tests/test_agent.py::test_tc13_provider_failure_falls_back PASSED        [ 87%]
+tests/test_agent.py::test_tc13_consent_defaults_off_and_is_audited PASSED [100%]
+
+=============================== warnings summary ===============================
+.venv/lib/python3.14/site-packages/starlette/testclient.py:40
+  /Users/anirudhn/SE_Mini_Project/resume-matcher/.venv/lib/python3.14/site-packages/starlette/testclient.py:40: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+.venv/lib/python3.14/site-packages/fastapi/routing.py:233: 45 warnings
+  /Users/anirudhn/SE_Mini_Project/resume-matcher/.venv/lib/python3.14/site-packages/fastapi/routing.py:233: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    is_coroutine = asyncio.iscoroutinefunction(dependant.call)
+
+.venv/lib/python3.14/site-packages/starlette/_utils.py:39: 48 warnings
+tests/test_agent.py: 4 warnings
+  /Users/anirudhn/SE_Mini_Project/resume-matcher/.venv/lib/python3.14/site-packages/starlette/_utils.py:39: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    return asyncio.iscoroutinefunction(obj) or (callable(obj) and asyncio.iscoroutinefunction(obj.__call__))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 8 passed, 98 warnings in 0.20s ========================

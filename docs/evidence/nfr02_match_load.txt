@@ -1,0 +1,2 @@
+requests=200 ok=200 users=20 p50=1.175s p95=1.334s max=1.708s (no external provider)
+NFR-02 PASS
