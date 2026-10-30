@@ -24,4 +24,4 @@ tests/test_resumes.py: 6 warnings
     return asyncio.iscoroutinefunction(obj) or (callable(obj) and asyncio.iscoroutinefunction(obj.__call__))
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-49 passed, 136 warnings in 1.34s
+49 passed, 136 warnings in 1.37s
