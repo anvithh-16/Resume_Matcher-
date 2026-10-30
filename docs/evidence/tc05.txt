@@ -1,0 +1,18 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.7, pytest-8.3.4, pluggy-1.7.0 -- C:\Users\Ankitha\Desktop\SE Mini Project\ankitha-repo\.venv\Scripts\python.exe
+rootdir: C:\Users\Ankitha\Desktop\SE Mini Project\ankitha-repo
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collecting ... collected 3 items
+
+tests/test_jobs.py::test_tc05_search_obeys_filters PASSED                [ 33%]
+tests/test_jobs.py::test_tc05_skill_aliases_match PASSED                 [ 66%]
+tests/test_jobs.py::test_seed_loaded PASSED                              [100%]
+
+============================== warnings summary ===============================
+.venv\Lib\site-packages\starlette\testclient.py:40
+  C:\Users\Ankitha\Desktop\SE Mini Project\ankitha-repo\.venv\Lib\site-packages\starlette\testclient.py:40: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 3 passed, 1 warning in 0.23s =========================
