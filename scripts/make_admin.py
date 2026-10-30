@@ -1,4 +1,6 @@
+"""Make an existing user an administrator.  Usage: python -m scripts.make_admin someone@example.com"""
 import sys
+
 from app.db.database import SessionLocal, init_db
 from app.db.models import User
 
