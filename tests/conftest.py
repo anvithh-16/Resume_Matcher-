@@ -6,6 +6,10 @@ _tmp = tempfile.mkdtemp()
 os.environ["DATABASE_URL"] = f"sqlite:///{_tmp}/test.db"
 os.environ["STORAGE_DIR"] = f"{_tmp}/storage"
 
+# email-validator rejects the reserved ".local" TLD; allow it for the fixture users only.
+import email_validator  # noqa: E402
+email_validator.SPECIAL_USE_DOMAIN_NAMES.remove("local")
+
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 from app.db.database import SessionLocal  # noqa: E402
