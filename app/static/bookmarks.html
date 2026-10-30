@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resume Matcher – Bookmarks</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <h1>Bookmarks</h1>
+  <div id="msg" aria-live="polite"></div>
+  <div id="list"></div>
+</main>
+<script src="/app.js"></script>
+<script>
+  requireLogin();
+  renderNav();
+  const msg = document.getElementById("msg");
+  const list = document.getElementById("list");
+
+  function esc(s) {
+    const d = document.createElement("div");
+    d.textContent = s == null ? "" : String(s);
+    return d.innerHTML;
+  }
+
+  async function load() {
+    try {
+      const data = await api("/bookmarks");
+      if (!data.bookmarks.length) {
+        list.innerHTML = "<p>No bookmarks yet — bookmark jobs from the Jobs page.</p>";
+        return;
+      }
+      list.innerHTML = data.bookmarks.map((b) => `
+        <div class="card">
+          <h2>${esc(b.title)}</h2>
+          <p>${esc(b.company)} · ${esc(b.location)}</p>
+          <a href="/match.html?job_id=${b.job_id}">Match</a>
+          <button type="button" data-id="${b.job_id}" aria-label="Remove bookmark for ${esc(b.title)}">Remove</button>
+        </div>`).join("");
+    } catch (err) { showMessage(msg, err.message, true); }
+  }
+
+  list.addEventListener("click", async (e) => {
+    const id = e.target.dataset && e.target.dataset.id;
+    if (!id) return;
+    try {
+      await api("/bookmarks/" + id, { method: "DELETE" });
+      showMessage(msg, "Bookmark removed.", false);
+      load();
+    } catch (err) { showMessage(msg, err.message, true); }
+  });
+
+  load();
+</script>
+</body>
+</html>
