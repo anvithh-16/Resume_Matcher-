@@ -12,5 +12,5 @@ MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_BYTES", "2097152"))
 TOKEN_MINUTES = int(os.getenv("TOKEN_MINUTES", "60"))
 EXTERNAL_AI_ENABLED = os.getenv("EXTERNAL_AI_ENABLED", "false").lower() == "true"
 
-if APP_ENV == "production" and SECRET_KEY == "dev-only-secret":
+if APP_ENV == "production" and SECRET_KEY in ("dev-only-secret", "change-me-to-a-long-random-string"):
     raise RuntimeError("Set a real SECRET_KEY before running in production.")

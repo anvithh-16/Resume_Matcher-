@@ -6,3 +6,5 @@ app.db
 perf.db
 storage/
 .pytest_cache/
+key.pem
+cert.pem
