@@ -1,0 +1,5 @@
+NFR-06 module review - 30 Oct 2026
+Layers present: routes, services, data access, agent, matching
+Missing: none
+Service modules: job_service, matching, parser, resume_service, skills
+Not referenced by any test: job_service

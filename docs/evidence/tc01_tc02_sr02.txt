@@ -1,0 +1,27 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.0, pytest-8.3.4, pluggy-1.7.0 -- /Users/anvithvegi/PES/Semester 5/SE/Practical/Mini Project/Resume_Matcher-/.venv/bin/python3
+rootdir: /Users/anvithvegi/PES/Semester 5/SE/Practical/Mini Project/Resume_Matcher-
+configfile: pytest.ini
+plugins: anyio-4.15.1
+collecting ... collected 3 items
+
+tests/test_auth.py::test_tc01_register_valid_then_duplicate PASSED       [ 33%]
+tests/test_auth.py::test_tc02_login_and_protected_endpoint PASSED        [ 66%]
+tests/test_auth.py::test_sr02_password_stored_only_as_argon2_hash PASSED [100%]
+
+=============================== warnings summary ===============================
+.venv/lib/python3.14/site-packages/starlette/testclient.py:40
+  /Users/anvithvegi/PES/Semester 5/SE/Practical/Mini Project/Resume_Matcher-/.venv/lib/python3.14/site-packages/starlette/testclient.py:40: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+.venv/lib/python3.14/site-packages/fastapi/routing.py:233: 45 warnings
+  /Users/anvithvegi/PES/Semester 5/SE/Practical/Mini Project/Resume_Matcher-/.venv/lib/python3.14/site-packages/fastapi/routing.py:233: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    is_coroutine = asyncio.iscoroutinefunction(dependant.call)
+
+.venv/lib/python3.14/site-packages/starlette/_utils.py:39: 48 warnings
+tests/test_auth.py: 8 warnings
+  /Users/anvithvegi/PES/Semester 5/SE/Practical/Mini Project/Resume_Matcher-/.venv/lib/python3.14/site-packages/starlette/_utils.py:39: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    return asyncio.iscoroutinefunction(obj) or (callable(obj) and asyncio.iscoroutinefunction(obj.__call__))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 3 passed, 102 warnings in 0.18s ========================

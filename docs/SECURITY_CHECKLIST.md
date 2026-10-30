@@ -1,14 +1,18 @@
 # Deployment Security Checklist (SR-07, SR-08) — run before release
-Run on 30 Oct 2026 against branch feat/17-deploy-config (self-signed certificate, localhost).
+
+Run by: Anvith Vegi · Date: 30 Oct 2026 · Branch: docs/anvith-final (Sprint-2 freeze candidate)
 
 | # | Check | How verified | Result | Evidence |
 |---|---|---|---|---|
-| 1 | HTTPS used outside localhost | uvicorn --ssl-keyfile/--ssl-certfile on 8443; curl over https | Pass — health 200 over https; plain HTTP to the TLS port is rejected. Browser padlock screenshot still to take | docs/evidence/sr07_https_check.txt, docs/evidence/sr07_https.png (to add) |
-| 2 | HTTP on localhost is development-only | README note | Pass — README "Deployment" section | README.md |
-| 3 | Production refuses default SECRET_KEY | start with APP_ENV=production, no SECRET_KEY (and with the .env.example placeholder) | Pass — RuntimeError "Set a real SECRET_KEY" for both | docs/evidence/sr07_default_secret_refused.txt, tests/test_deploy.py |
-| 4 | /docs hidden in production | GET /docs and /openapi.json -> 404 | Pass — both 404. Browser screenshot still to take | docs/evidence/sr07_https_check.txt, docs/evidence/sr07_no_docs.png (to add) |
-| 5 | Secrets only in .env (untracked); .env.example sanitized | git ls-files shows no .env, *.pem or app.db | Pass | `git ls-files` output |
-| 6 | No --reload / debug in production | run command in README | Pass — README production command has no --reload | README.md |
-| 7 | Audit events written: login_failed, access_denied, admin_job_import/update, consent_changed, resume_deleted, agent_tool_rejected | tests + sqlite3 app.db "select event_type,count(*) from audit_events group by 1" | Partial — login_failed and access_denied implemented; the other five depend on Ankitha's and Anirudh's Sprint-2 routes | re-run after their PRs merge |
-| 8 | Audit/log lines contain no passwords, tokens, resume text | test_ownership.py + tests/test_errors.py + manual log read | Pass for logs (test_errors.py; live server log after login shows no password/token). Audit part re-checked by TC-09 once routes merge | tests/test_errors.py |
-| 9 | Resume files stored outside app/static, named by random key | ls storage/ | Not run — resume upload (Ankitha, FR-03) not merged yet | |
+| 1 | HTTPS used outside localhost | uvicorn with --ssl-keyfile/--ssl-certfile on port 8443, self-signed cert | Pass | docs/evidence/sr07_https_check.txt |
+| 2 | HTTP on localhost is development-only | README deployment section | Pass | README.md (deployment section) |
+| 3 | Production refuses the default SECRET_KEY | APP_ENV=production with SECRET_KEY=dev-only-secret raises RuntimeError | Pass | docs/evidence/sr07_default_secret_refused.txt |
+| 4 | /docs hidden in production | APP_ENV=production: GET /docs returns 404 | Pass | terminal run, 30 Oct 2026 |
+| 5 | Secrets only in .env (untracked); .env.example sanitized | git ls-files shows no .env | Pass | terminal run, 30 Oct 2026 |
+| 6 | No --reload / debug in production | README states production must not use --reload | Pass | README.md (deployment section) |
+| 7 | Audit events: login_failed, access_denied, admin_job_import/update, consent_changed, resume_deleted, agent_tool_rejected | all 7 found in app/ (grep); access_denied, admin and consent events also asserted in tests | Pass | tests/test_ownership.py, test_admin.py, test_agent.py |
+| 8 | Audit/log lines contain no passwords, tokens or resume text | log redaction test + ownership test assert no secrets | Pass | docs/evidence/tc12.txt, docs/evidence/tc09.txt |
+| 9 | Resume files stored outside app/static, named by random key | resume_service.py stores files as uuid4 hex names under STORAGE_DIR | Pass | app/services/resume_service.py |
+
+Result: 9/9 checks passed. Development runs on HTTP localhost only; HTTPS was demonstrated locally with a
+self-signed certificate rather than a real hosted deployment (see docs/DEVIATIONS.md).

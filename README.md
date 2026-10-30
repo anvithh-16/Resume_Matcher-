@@ -93,6 +93,7 @@ In production the app refuses to start with the default or `.env.example` secret
 
 ```bash
 pytest -q
+python -m pytest -q        # use this form if another pytest is installed globally
 ```
 
 CI runs the same command on every pull request and on pushes to `main`.
