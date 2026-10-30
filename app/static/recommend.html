@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resume Matcher – Recommendations</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <h1>Job recommendations</h1>
+  <div id="msg" aria-live="polite"></div>
+
+  <form id="rec-form">
+    <label for="resume">My resume</label>
+    <select id="resume" required></select>
+
+    <label for="location">Location (optional)</label>
+    <input id="location" type="text" placeholder="e.g. Bengaluru or Remote" autocomplete="off">
+
+    <label for="topk">How many</label>
+    <select id="topk">
+      <option value="3">3</option>
+      <option value="5" selected>5</option>
+      <option value="10">10</option>
+    </select>
+
+    <button type="submit">Get recommendations</button>
+  </form>
+
+  <section id="results" aria-live="polite"></section>
+
+  <fieldset class="card">
+    <legend>AI explanations</legend>
+    <p id="notice"></p>
+    <input id="consent" type="checkbox">
+    <label for="consent" style="display:inline">Allow sending job titles and skill names to the AI provider</label>
+    <p>Provider configured: <strong id="configured">…</strong></p>
+  </fieldset>
+</main>
+
+<script src="/app.js"></script>
+<script>
+  requireLogin();
+  renderNav();
+
+  const msg = document.getElementById("msg");
+  const resumeSel = document.getElementById("resume");
+  const results = document.getElementById("results");
+  const consentBox = document.getElementById("consent");
+  const params = new URLSearchParams(location.search);
+
+  const esc = (s) => { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; };
+  const list = (items, empty) => items && items.length
+    ? "<ul>" + items.map((i) => `<li>${esc(i)}</li>`).join("") + "</ul>"
+    : `<p><em>${empty}</em></p>`;
+
+  function card(r, i) {
+    return `<div class="card">
+      <h2>${i + 1}. ${esc(r.title)} — ${esc(r.company)}</h2>
+      <p>${esc(r.location)} · <strong>${r.score} / 100</strong></p>
+      ${(r.warnings || []).map((w) => `<p class="msg error">${esc(w)}</p>`).join("")}
+      <h3>Matched skills</h3>${list(r.matched_skills, "None")}
+      <h3>Missing skills</h3>${list(r.missing_skills, "Nothing missing")}
+      <h3>Why</h3>${list(r.explanation, "No explanation available")}
+      <button type="button" data-bookmark="${r.job_id}">Bookmark</button>
+      <button type="button" data-track="${r.job_id}">Track application</button>
+      <a href="/match.html?job_id=${r.job_id}&resume_id=${resumeSel.value}">Open full match</a>
+    </div>`;
+  }
+
+  function wireButtons() {
+    results.querySelectorAll("[data-bookmark]").forEach((b) => b.onclick = async () => {
+      try { await api("/bookmarks", { method: "POST", json: { job_id: Number(b.dataset.bookmark) } }); showMessage(msg, "Bookmarked.", false); }
+      catch (err) { showMessage(msg, err.message, true); }
+    });
+    results.querySelectorAll("[data-track]").forEach((b) => b.onclick = async () => {
+      try { await api("/applications", { method: "POST", json: { job_id: Number(b.dataset.track) } }); showMessage(msg, "Added to My applications.", false); }
+      catch (err) { showMessage(msg, err.message, true); }
+    });
+  }
+
+  document.getElementById("rec-form").onsubmit = async (e) => {
+    e.preventDefault();
+    results.innerHTML = "<p>Working…</p>";
+    try {
+      const loc = document.getElementById("location").value.trim();
+      const body = await api("/recommendations", { method: "POST", json: {
+        resume_id: Number(resumeSel.value), location: loc || null, top_k: Number(document.getElementById("topk").value) } });
+      const recs = body.recommendations;
+      results.innerHTML = (recs.length ? recs.map(card).join("") : "") +
+        `<div class="card">
+           <p><strong>Steps the agent ran:</strong> ${esc(body.tool_trace.join(" → "))}</p>
+           <p><strong>External AI calls:</strong> ${body.external_calls}</p>
+           <p><small>${esc(body.note)}</small></p>
+         </div>`;
+      if (body.guidance) showMessage(msg, body.guidance, true);
+      else showMessage(msg, recs.length + " recommendations ready.", false);
+      wireButtons();
+    } catch (err) {
+      results.innerHTML = "";
+      showMessage(msg, err.message, true);
+    }
+  };
+
+  consentBox.onchange = async () => {
+    try {
+      const c = await api("/consent", { method: "PUT", json: { external_ai_enabled: consentBox.checked } });
+      showMessage(msg, c.external_ai_enabled ? "AI explanations allowed." : "AI explanations turned off.", false);
+    } catch (err) { showMessage(msg, err.message, true); }
+  };
+
+  async function init() {
+    const [resumes, consent] = await Promise.all([api("/resumes"), api("/consent")]);
+    if (!resumes.resumes.length) {
+      results.innerHTML = '<p class="msg error">Upload a resume first: <a href="/resume.html">go to My resume</a>.</p>';
+      document.querySelector("#rec-form button").disabled = true;
+    } else {
+      resumeSel.innerHTML = resumes.resumes.map((r) => `<option value="${r.id}">${esc(r.filename)}</option>`).join("");
+      if (params.get("resume_id")) resumeSel.value = params.get("resume_id");
+    }
+    document.getElementById("notice").textContent = consent.notice;
+    consentBox.checked = consent.external_ai_enabled;
+    document.getElementById("configured").textContent = consent.provider_configured ? "yes" : "no";
+  }
+
+  init().catch((err) => showMessage(msg, err.message, true));
+</script>
+</body>
+</html>

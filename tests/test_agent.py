@@ -1,4 +1,4 @@
-"""TC-08 (FR-08, SR-05, FR-09). Owner: Anirudh N."""
+"""TC-08 (FR-08, SR-05, FR-09) and TC-13 (FR-13, SR-06). Owner: Anirudh N."""
 import pytest
 
 from app.agent.orchestrator import PLAN
@@ -56,3 +56,53 @@ def test_tc08_no_skills_gives_guidance(client, user_a, create_resume):
 def test_tc08_other_users_resume_is_404(client, user_b, create_resume, user_a):
     rid = create_resume("a@test.local", {"skills": ["python"], "raw_text": "python"})
     assert client.post(REC, headers=user_b, json={"resume_id": rid}).status_code == 404
+
+
+# ---------------- TC-13 (FR-13, SR-06) ----------------
+
+def test_tc13_no_external_transfer_without_consent(client, user_a, create_job, create_resume, monkeypatch):
+    sent = []
+    monkeypatch.setattr("app.agent.provider._call_provider", lambda p: sent.append(p) or p["explanations"])
+    create_job(title="Consent Job", required_skills=["python"])
+    rid = create_resume("a@test.local", {"skills": ["python"],
+                                         "raw_text": "python developer riya@example.com secret-resume-text"})
+    # 1) default: provider off, no consent
+    assert client.post(REC, headers=user_a, json={"resume_id": rid}).json()["external_calls"] == 0
+    # 2) provider configured but user has not consented
+    monkeypatch.setattr("app.core.config.EXTERNAL_AI_ENABLED", True)
+    assert client.post(REC, headers=user_a, json={"resume_id": rid}).json()["external_calls"] == 0
+    assert sent == []
+    # 3) user consents -> only minimized fields leave
+    client.put("/api/v1/consent", headers=user_a, json={"external_ai_enabled": True})
+    body = client.post(REC, headers=user_a, json={"resume_id": rid}).json()
+    client.put("/api/v1/consent", headers=user_a, json={"external_ai_enabled": False})
+    assert body["external_calls"] >= 1 and sent
+    for payload in sent:
+        assert set(payload) == {"job_title", "matched_skills", "missing_skills", "explanations"}
+        assert "secret-resume-text" not in str(payload) and "@" not in str(payload)
+
+
+def test_tc13_provider_failure_falls_back(client, user_a, create_job, create_resume, monkeypatch):
+    def broken(_payload):
+        raise TimeoutError("provider slow")
+    monkeypatch.setattr("app.agent.provider._call_provider", broken)
+    monkeypatch.setattr("app.core.config.EXTERNAL_AI_ENABLED", True)
+    create_job(title="Fallback Job", required_skills=["python"])
+    rid = create_resume("a@test.local", {"skills": ["python"], "raw_text": "python developer"})
+    client.put("/api/v1/consent", headers=user_a, json={"external_ai_enabled": True})
+    r = client.post(REC, headers=user_a, json={"resume_id": rid})
+    client.put("/api/v1/consent", headers=user_a, json={"external_ai_enabled": False})
+    assert r.status_code == 200 and "Traceback" not in r.text
+    assert all(rec["explanation"] for rec in r.json()["recommendations"])      # standard reasons kept
+    assert any(rec.get("warnings") for rec in r.json()["recommendations"])
+
+
+def test_tc13_consent_defaults_off_and_is_audited(client, user_b):
+    from app.db.models import AuditEvent
+    assert client.get("/api/v1/consent", headers=user_b).json()["external_ai_enabled"] is False
+    client.put("/api/v1/consent", headers=user_b, json={"external_ai_enabled": True})
+    client.put("/api/v1/consent", headers=user_b, json={"external_ai_enabled": False})
+    db = SessionLocal()
+    assert db.query(AuditEvent).filter_by(event_type="consent_changed").count() >= 2
+    db.close()
+    assert client.get("/api/v1/consent").status_code == 401
