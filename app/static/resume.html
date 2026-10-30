@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resume Matcher – My resume</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <h1>My resume</h1>
+  <div id="msg" aria-live="polite"></div>
+
+  <form id="upload-form">
+    <label for="file">Resume file (PDF, DOCX or TXT, max 2 MB)</label>
+    <input id="file" type="file" accept=".pdf,.docx,.txt" required>
+    <button type="submit">Upload and parse</button>
+  </form>
+
+  <h2>My uploaded resumes</h2>
+  <div id="list"></div>
+</main>
+
+<script src="/app.js"></script>
+<script>
+  requireLogin();
+  renderNav();
+
+  const msg = document.getElementById("msg");
+  const list = document.getElementById("list");
+  const esc = (s) => { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; };
+  const section = (title, items) => `<h3>${title}</h3>` + (items && items.length
+    ? "<ul>" + items.map((i) => `<li>${esc(i)}</li>`).join("") + "</ul>"
+    : "<p><em>Not found in your resume</em></p>");
+
+  function card(r) {
+    const p = r.profile || {}, c = p.contact || {};
+    return `<div class="card">
+      <h2>${esc(r.filename)}</h2>
+      ${(p.warnings || []).map((w) => `<p class="msg error">${esc(w)}</p>`).join("")}
+      ${section("Skills", p.skills)}${section("Education", p.education)}${section("Experience", p.experience)}
+      <p>Email: ${esc(c.email || "not found")} · Phone: ${esc(c.phone || "not found")}</p>
+      <p><a href="/match.html?resume_id=${r.id}">Match against a job</a> ·
+         <a href="/recommend.html?resume_id=${r.id}">Get recommendations</a></p>
+      <button type="button" data-del="${r.id}">Delete this resume and its data</button>
+    </div>`;
+  }
+
+  async function load() {
+    const data = await api("/resumes");
+    list.innerHTML = data.resumes.length ? data.resumes.map(card).join("") : "<p>No resume uploaded yet.</p>";
+    list.querySelectorAll("[data-del]").forEach((b) => b.onclick = async () => {
+      if (!confirm("Delete this resume and all extracted data?")) return;
+      try {
+        await api("/resumes/" + b.dataset.del, { method: "DELETE" });
+        showMessage(msg, "Resume deleted.", false);
+        load();
+      } catch (err) { showMessage(msg, err.message, true); }
+    });
+  }
+
+  document.getElementById("upload-form").onsubmit = async (e) => {
+    e.preventDefault();
+    const fd = new FormData();
+    fd.append("file", document.getElementById("file").files[0]);
+    try {
+      await api("/resumes", { method: "POST", body: fd });
+      showMessage(msg, "Uploaded. Please review the extracted fields below.", false);
+      e.target.reset();
+      load();
+    } catch (err) { showMessage(msg, err.message, true); }
+  };
+
+  load().catch((err) => showMessage(msg, err.message, true));
+</script>
+</body>
+</html>
