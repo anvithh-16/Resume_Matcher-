@@ -1,0 +1,538 @@
+[
+  {
+    "title": "Backend Developer Intern",
+    "company": "Nimbus Labs",
+    "location": "Bengaluru",
+    "description": "Build REST APIs for our hiring platform. Work with Python and SQL daily.",
+    "required_skills": [
+      "python",
+      "fastapi",
+      "sql",
+      "git"
+    ],
+    "employment_type": "internship",
+    "source": "curated"
+  },
+  {
+    "title": "Python Developer",
+    "company": "Kavya Softworks",
+    "location": "Hyderabad",
+    "description": "Develop and maintain Django services for retail clients. Write clean, tested Python code.",
+    "required_skills": [
+      "python",
+      "django",
+      "sql",
+      "rest api"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "Data Analyst",
+    "company": "Tarang Analytics",
+    "location": "Pune",
+    "description": "Turn sales data into weekly dashboards. Partner with business teams on reporting.",
+    "required_skills": [
+      "sql",
+      "excel",
+      "tableau",
+      "data analysis"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "Machine Learning Engineer",
+    "company": "Vidyut AI",
+    "location": "Bengaluru",
+    "description": "Train and deploy models for document understanding. Own the model serving pipeline.",
+    "required_skills": [
+      "python",
+      "machine learning",
+      "pytorch",
+      "docker"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "Frontend Developer",
+    "company": "Pixelmint",
+    "location": "Remote",
+    "description": "Build responsive web interfaces for a fintech product. Work closely with designers.",
+    "required_skills": [
+      "javascript",
+      "react",
+      "html",
+      "css"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "Java Backend Engineer",
+    "company": "Setu Systems",
+    "location": "Chennai",
+    "description": "Design microservices for payment processing. Improve reliability of core APIs.",
+    "required_skills": [
+      "java",
+      "spring",
+      "sql",
+      "rest api"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "DevOps Engineer",
+    "company": "Cloudkite",
+    "location": "Bengaluru",
+    "description": "Run container infrastructure across three regions. Automate deployments and monitoring.",
+    "required_skills": [
+      "docker",
+      "kubernetes",
+      "aws",
+      "linux"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "Data Science Intern",
+    "company": "Samudra Insights",
+    "location": "Mumbai",
+    "description": "Analyse customer churn data and build baseline models. Present findings to the product team.",
+    "required_skills": [
+      "python",
+      "pandas",
+      "numpy",
+      "scikit-learn"
+    ],
+    "employment_type": "internship",
+    "source": "curated"
+  },
+  {
+    "title": "Full Stack Developer",
+    "company": "Orbitly",
+    "location": "Pune",
+    "description": "Ship features end to end on a SaaS scheduling tool. Own both API and UI work.",
+    "required_skills": [
+      "javascript",
+      "node.js",
+      "react",
+      "mongodb"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "NLP Engineer",
+    "company": "Bhasha Labs",
+    "location": "Hyderabad",
+    "description": "Build language models for Indian languages. Evaluate and improve translation quality.",
+    "required_skills": [
+      "python",
+      "nlp",
+      "pytorch",
+      "machine learning"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "Business Intelligence Analyst",
+    "company": "Ledgerline",
+    "location": "Mumbai",
+    "description": "Maintain finance dashboards in Power BI. Write SQL to answer ad-hoc questions.",
+    "required_skills": [
+      "sql",
+      "power bi",
+      "excel",
+      "data analysis"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "Cloud Support Associate",
+    "company": "Stratus Works",
+    "location": "Chennai",
+    "description": "Help customers troubleshoot cloud deployments. Escalate and document recurring issues.",
+    "required_skills": [
+      "aws",
+      "linux",
+      "communication"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "Software Engineering Intern",
+    "company": "Kiteboard",
+    "location": "Remote",
+    "description": "Fix bugs and add small features to our internal tools. Learn code review and testing.",
+    "required_skills": [
+      "python",
+      "git",
+      "rest api"
+    ],
+    "employment_type": "internship",
+    "source": "curated"
+  },
+  {
+    "title": "React Native Developer",
+    "company": "Chalo Apps",
+    "location": "Bengaluru",
+    "description": "Build a mobile ordering app for restaurants. Six-month contract with possible extension.",
+    "required_skills": [
+      "javascript",
+      "react",
+      "typescript"
+    ],
+    "employment_type": "contract",
+    "source": "curated"
+  },
+  {
+    "title": "Deep Learning Researcher",
+    "company": "Prisma Vision",
+    "location": "Bengaluru",
+    "description": "Research image segmentation for medical scans. Publish and productionise results.",
+    "required_skills": [
+      "python",
+      "deep learning",
+      "tensorflow",
+      "pytorch"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "SQL Developer",
+    "company": "Datavault India",
+    "location": "Hyderabad",
+    "description": "Optimise stored procedures and reporting queries. Support the analytics team.",
+    "required_skills": [
+      "sql",
+      "excel"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "Platform Engineer",
+    "company": "Hexacore",
+    "location": "Pune",
+    "description": "Maintain the developer platform and CI pipelines. Improve build times for 200 engineers.",
+    "required_skills": [
+      "kubernetes",
+      "docker",
+      "linux",
+      "git"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "Junior Data Engineer",
+    "company": "Flowstack",
+    "location": "Remote",
+    "description": "Build batch pipelines that load data into the warehouse. Monitor data quality.",
+    "required_skills": [
+      "python",
+      "sql",
+      "aws",
+      "pandas"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "C++ Systems Developer",
+    "company": "Quantix Trading",
+    "location": "Mumbai",
+    "description": "Write low-latency trading components. Profile and optimise hot code paths.",
+    "required_skills": [
+      "c++",
+      "linux",
+      "git"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "Web Developer Intern",
+    "company": "Greenleaf Digital",
+    "location": "Chennai",
+    "description": "Build landing pages for NGO clients. Learn accessibility and responsive design.",
+    "required_skills": [
+      "html",
+      "css",
+      "javascript"
+    ],
+    "employment_type": "internship",
+    "source": "curated"
+  },
+  {
+    "title": "Azure Cloud Engineer",
+    "company": "Tejas Infotech",
+    "location": "Bengaluru",
+    "description": "Migrate on-premise apps to Azure. Set up monitoring and backups.",
+    "required_skills": [
+      "azure",
+      "docker",
+      "linux"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "Flask API Developer",
+    "company": "Mitra Health",
+    "location": "Hyderabad",
+    "description": "Build APIs for a clinic appointment system. Three-month contract.",
+    "required_skills": [
+      "python",
+      "flask",
+      "sql",
+      "rest api"
+    ],
+    "employment_type": "contract",
+    "source": "curated"
+  },
+  {
+    "title": "Analytics Intern",
+    "company": "Rangoli Retail",
+    "location": "Pune",
+    "description": "Clean store sales data and prepare weekly summaries. Work with the category team.",
+    "required_skills": [
+      "excel",
+      "data analysis",
+      "communication"
+    ],
+    "employment_type": "internship",
+    "source": "curated"
+  },
+  {
+    "title": "TypeScript Engineer",
+    "company": "Sutra Cloud",
+    "location": "Remote",
+    "description": "Build backend services in TypeScript. Contribute to API design reviews.",
+    "required_skills": [
+      "typescript",
+      "node.js",
+      "rest api",
+      "git"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "Computer Vision Intern",
+    "company": "Drishti AI",
+    "location": "Bengaluru",
+    "description": "Label data and train detection models for traffic cameras. Mentored by senior researchers.",
+    "required_skills": [
+      "python",
+      "deep learning",
+      "numpy"
+    ],
+    "employment_type": "internship",
+    "source": "curated"
+  },
+  {
+    "title": "MLOps Engineer",
+    "company": "Aarohan Data",
+    "location": "Chennai",
+    "description": "Automate model training and deployment. Track experiments and model versions.",
+    "required_skills": [
+      "python",
+      "docker",
+      "kubernetes",
+      "machine learning"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "Spring Boot Developer",
+    "company": "Kosh Bank Tech",
+    "location": "Mumbai",
+    "description": "Develop banking APIs with strict security standards. Write integration tests.",
+    "required_skills": [
+      "java",
+      "spring",
+      "sql"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "Tableau Developer",
+    "company": "Insightory",
+    "location": "Hyderabad",
+    "description": "Design executive dashboards for healthcare clients. 20 hours a week.",
+    "required_skills": [
+      "tableau",
+      "sql",
+      "data analysis"
+    ],
+    "employment_type": "part-time",
+    "source": "curated"
+  },
+  {
+    "title": "QA Automation Engineer",
+    "company": "Testwise",
+    "location": "Pune",
+    "description": "Write automated API and UI tests. Maintain the regression suite.",
+    "required_skills": [
+      "python",
+      "git",
+      "rest api"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "MongoDB Developer",
+    "company": "Nexus Commerce",
+    "location": "Remote",
+    "description": "Design document schemas for a marketplace. Optimise slow queries.",
+    "required_skills": [
+      "mongodb",
+      "node.js",
+      "javascript"
+    ],
+    "employment_type": "contract",
+    "source": "curated"
+  },
+  {
+    "title": "Technical Support Engineer",
+    "company": "Helpdeck",
+    "location": "Bengaluru",
+    "description": "Resolve customer issues for a hosting product. Write help-centre articles.",
+    "required_skills": [
+      "linux",
+      "communication",
+      "sql"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "Data Visualization Intern",
+    "company": "Chitra Analytics",
+    "location": "Remote",
+    "description": "Build Power BI reports for operations teams. Learn data modelling basics.",
+    "required_skills": [
+      "power bi",
+      "excel"
+    ],
+    "employment_type": "internship",
+    "source": "curated"
+  },
+  {
+    "title": "Junior Java Developer",
+    "company": "Ganga Software",
+    "location": "Chennai",
+    "description": "Maintain an inventory management system. Fix defects and add reports.",
+    "required_skills": [
+      "java",
+      "sql",
+      "git"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "Scikit-learn Data Scientist",
+    "company": "Ankur Fintech",
+    "location": "Bengaluru",
+    "description": "Build credit risk models with explainable features. Present results to risk teams.",
+    "required_skills": [
+      "python",
+      "scikit-learn",
+      "pandas",
+      "sql"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "Site Reliability Intern",
+    "company": "Uptimer",
+    "location": "Hyderabad",
+    "description": "Help run on-call tooling and dashboards. Learn incident response.",
+    "required_skills": [
+      "linux",
+      "docker",
+      "git"
+    ],
+    "employment_type": "internship",
+    "source": "curated"
+  },
+  {
+    "title": "Product Analyst",
+    "company": "Bazaar Now",
+    "location": "Mumbai",
+    "description": "Measure feature adoption and run A/B tests. Work with product managers.",
+    "required_skills": [
+      "sql",
+      "excel",
+      "communication",
+      "data analysis"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "HTML Email Developer",
+    "company": "Postbox Studio",
+    "location": "Remote",
+    "description": "Build responsive marketing emails. Part-time, flexible hours.",
+    "required_skills": [
+      "html",
+      "css"
+    ],
+    "employment_type": "part-time",
+    "source": "curated"
+  },
+  {
+    "title": "AI Research Intern",
+    "company": "Gyaan Labs",
+    "location": "Pune",
+    "description": "Explore retrieval methods for question answering. Write short research notes.",
+    "required_skills": [
+      "python",
+      "machine learning",
+      "nlp"
+    ],
+    "employment_type": "internship",
+    "source": "curated"
+  },
+  {
+    "title": "Node.js Backend Developer",
+    "company": "Railyard",
+    "location": "Bengaluru",
+    "description": "Build real-time tracking APIs for logistics. Own services end to end.",
+    "required_skills": [
+      "node.js",
+      "javascript",
+      "mongodb",
+      "rest api"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  },
+  {
+    "title": "Content Operations Associate",
+    "company": "Kahani Media",
+    "location": "Chennai",
+    "description": "Coordinate publishing schedules and track content metrics. No coding required.",
+    "required_skills": [
+      "communication",
+      "excel"
+    ],
+    "employment_type": "full-time",
+    "source": "curated"
+  }
+]
