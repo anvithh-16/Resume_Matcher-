@@ -16,10 +16,10 @@ FR-11,Application tracking service,TC-11,Ankitha,Pass,docs/evidence/tc11.txt
 "FR-14, SR-04",Error handler and logging filters,TC-12,Anvith,Pass,docs/evidence/tc12.txt
 "FR-13, SR-06",Consent gate / provider adapter,TC-13,Anirudh,Pass,docs/evidence/tc08_tc13.txt
 NFR-03,Matching service and test harness,TC-14,Anirudh,Pass,docs/evidence/tc14.txt
-"NFR-04, NFR-08",User interface / usability checks,TC-15,Ankitha,<set Pass/Fail>,"docs/evidence/nfr08_lighthouse.txt, docs/USABILITY.md"
+"NFR-04, NFR-08",User interface / usability checks,TC-15,Ankitha,Partial,"docs/evidence/nfr08_lighthouse.txt, docs/USABILITY.md"
 SR-02,Credential storage implementation,TC-02 plus dedicated password-hash inspection,Anvith,Pass,docs/evidence/tc01_tc02_sr02.txt
-"SR-07, SR-08",Deployment configuration and audit logger,Deployment security checklist,Anvith,<set Pass/Partial/Fail>,docs/SECURITY_CHECKLIST.md
+"SR-07, SR-08",Deployment configuration and audit logger,Deployment security checklist,Anvith,Pass,docs/SECURITY_CHECKLIST.md
 NFR-02,Matching endpoint,Load measurement with fixed resume/job fixtures,Anirudh,Pass,docs/evidence/nfr02_match_load.txt
 "NFR-05, NFR-07",Client compatibility; deletion flow,Browser checklist; deletion test,Ankitha,Partial,docs/evidence/nfr05_browsers.txt; docs/evidence/tc03_tc04_nfr07.txt
-"NFR-06, NFR-09",Module boundaries; setup documentation,Code review; clean setup run,Anvith,PASS,docs/evidence/nfr06_module_review.txt; docs/evidence/full_suite.txt
+"NFR-06, NFR-09",Module boundaries; setup documentation,Code review; clean setup run,Anvith,Pass,docs/evidence/nfr06_module_review.txt; docs/evidence/full_suite.txt
 FR-15,Admin job import/update service,Import validation test (tests/test_admin.py),Ankitha,Pass,docs/evidence/fr15.txt

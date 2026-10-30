@@ -1,17 +1,17 @@
 NFR-08 accessibility evidence - Ankitha Revadala - 30 Oct 2026
-Chrome version: ______   (Chrome menu > Help > About Google Chrome)
+Chrome version: 156.0.8078.48   (Chrome menu > Help > About Google Chrome)
 
 Lighthouse (DevTools > Lighthouse > Category: Accessibility > Analyze page load), one line per page:
-index.html          score: _100__   failing items: ___None___
-resume.html         score: _100__   failing items: ___None___
-jobs.html           score: _100__   failing items: ___None___
-match.html          score: _100__   failing items: ___None___
-recommend.html      score: _100__   failing items: ___None___
-bookmarks.html      score: _100__   failing items: ___None___
-applications.html   score: _100__   failing items: ___None___
+index.html          score: 100   failing items: None
+resume.html         score: 100   failing items: None
+jobs.html           score: 100   failing items: None
+match.html          score: 100   failing items: None
+recommend.html      score: 100   failing items: None
+bookmarks.html      score: 100   failing items: None
+applications.html   score: 100   failing items: None
 
 Keyboard-only journey (Tab / Shift+Tab / Enter / Space only, no mouse):
 register -> log in -> upload resume -> view fields -> search jobs -> open match -> see result
-Completed without mouse: YES      Problems found: __None____
+Completed without mouse: YES      Problems found: None
 Focus outline always visible: YES 
 Every input/select has a label (Inspect > Accessibility > Name): YES 
