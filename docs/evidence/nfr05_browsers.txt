@@ -1,0 +1,6 @@
+NFR-05 browser compatibility - Ankitha Revadala - 30 Oct 2026
+Full journey: register, log in, upload resume_good.pdf, search "python", match, recommendations,
+track application, change status, delete resume.
+
+Chrome  version: ______   journey works: YES / NO   differences: ______   screenshot: docs/evidence/nfr05_chrome.png
+Firefox version: ______   journey works: YES / NO   differences: ______   screenshot: docs/evidence/nfr05_firefox.png
