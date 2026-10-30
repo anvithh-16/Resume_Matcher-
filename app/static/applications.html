@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resume Matcher – My applications</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <h1>My applications</h1>
+  <p>This only tracks your progress. The system never submits applications for you.</p>
+  <div id="msg" aria-live="polite"></div>
+  <div id="list"></div>
+</main>
+
+<script src="/app.js"></script>
+<script>
+  requireLogin();
+  renderNav();
+
+  const msg = document.getElementById("msg");
+  const list = document.getElementById("list");
+  const esc = (s) => { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; };
+
+  function row(a, statuses) {
+    const opts = statuses.map((s) => `<option value="${s}"${s === a.status ? " selected" : ""}>${s}</option>`).join("");
+    return `<tr>
+      <td>${esc(a.title)}</td>
+      <td>${esc(a.company)}</td>
+      <td><label for="status-${a.id}" class="sr-only">Status for ${esc(a.title)}</label>
+          <select id="status-${a.id}">${opts}</select></td>
+      <td><label for="notes-${a.id}" class="sr-only">Notes for ${esc(a.title)}</label>
+          <input id="notes-${a.id}" type="text" value="${esc(a.notes || "")}" maxlength="1000"></td>
+      <td>${esc(new Date(a.updated_at).toLocaleString())}</td>
+      <td><button type="button" data-save="${a.id}">Save</button></td>
+    </tr>`;
+  }
+
+  async function load() {
+    const data = await api("/applications");
+    if (!data.applications.length) {
+      list.innerHTML = "<p>You are not tracking any applications yet. Use Track application on the Jobs page.</p>";
+      return;
+    }
+    list.innerHTML = `<table>
+      <caption>Jobs you are tracking</caption>
+      <thead><tr><th scope="col">Job</th><th scope="col">Company</th><th scope="col">Status</th>
+        <th scope="col">Notes</th><th scope="col">Updated</th><th scope="col">Save</th></tr></thead>
+      <tbody>${data.applications.map((a) => row(a, data.statuses)).join("")}</tbody></table>`;
+    list.querySelectorAll("[data-save]").forEach((b) => b.onclick = async () => {
+      const id = b.dataset.save;
+      try {
+        await api("/applications/" + id, { method: "PATCH", json: {
+          status: document.getElementById("status-" + id).value,
+          notes: document.getElementById("notes-" + id).value } });
+        showMessage(msg, "Saved.", false);
+        load();
+      } catch (err) { showMessage(msg, err.message, true); }
+    });
+  }
+
+  load().catch((err) => showMessage(msg, err.message, true));
+</script>
+<style>
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border-bottom: 1px solid #ccc; padding: 6px; text-align: left; vertical-align: middle; }
+  td label.sr-only { display: inline; margin: 0; }
+</style>
+</body>
+</html>
