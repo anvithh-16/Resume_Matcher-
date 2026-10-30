@@ -1,0 +1,27 @@
+.................................................                        [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.14/site-packages/starlette/testclient.py:40
+  /Users/anvithvegi/PES/Semester 5/SE/Practical/Mini Project/Resume_Matcher-/.venv/lib/python3.14/site-packages/starlette/testclient.py:40: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+.venv/lib/python3.14/site-packages/fastapi/routing.py:233: 45 warnings
+tests/test_errors.py: 1 warning
+  /Users/anvithvegi/PES/Semester 5/SE/Practical/Mini Project/Resume_Matcher-/.venv/lib/python3.14/site-packages/fastapi/routing.py:233: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    is_coroutine = asyncio.iscoroutinefunction(dependant.call)
+
+.venv/lib/python3.14/site-packages/starlette/_utils.py:39: 48 warnings
+tests/test_admin.py: 7 warnings
+tests/test_agent.py: 2 warnings
+tests/test_applications.py: 5 warnings
+tests/test_auth.py: 6 warnings
+tests/test_bookmarks.py: 3 warnings
+tests/test_errors.py: 3 warnings
+tests/test_jobs.py: 1 warning
+tests/test_matching.py: 2 warnings
+tests/test_ownership.py: 6 warnings
+tests/test_resumes.py: 6 warnings
+  /Users/anvithvegi/PES/Semester 5/SE/Practical/Mini Project/Resume_Matcher-/.venv/lib/python3.14/site-packages/starlette/_utils.py:39: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    return asyncio.iscoroutinefunction(obj) or (callable(obj) and asyncio.iscoroutinefunction(obj.__call__))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+49 passed, 136 warnings in 1.37s
