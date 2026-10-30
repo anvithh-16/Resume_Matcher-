@@ -1,0 +1,10 @@
+Riya Sharma
+riya.sharma@example.com | +91 98765 43210
+Education
+B.Tech in Computer Science, Example University, 2022-2026, CGPA 8.4
+Skills
+Python, SQL, FastAPI, Git, Machine Learning, Docker
+Experience
+Software Engineering Intern, Demo Labs (May 2025 - Jul 2025): built REST APIs in Python
+Projects
+Resume matcher using FastAPI and SQLite

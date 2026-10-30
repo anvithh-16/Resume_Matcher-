@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resume Matcher – Find jobs</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <h1>Find jobs</h1>
+  <div id="msg" aria-live="polite"></div>
+
+  <form id="search-form">
+    <label for="q">Keyword</label>
+    <input id="q" type="text" placeholder="e.g. developer" autocomplete="off">
+
+    <label for="skill">Skill</label>
+    <input id="skill" type="text" placeholder="e.g. python" autocomplete="off">
+
+    <label for="location">Location</label>
+    <input id="location" type="text" placeholder="e.g. Bengaluru or Remote" autocomplete="off">
+
+    <label for="employment_type">Job type</label>
+    <select id="employment_type">
+      <option value="">Any</option>
+      <option value="full-time">Full-time</option>
+      <option value="part-time">Part-time</option>
+      <option value="internship">Internship</option>
+      <option value="contract">Contract</option>
+    </select>
+
+    <button type="submit">Search</button>
+  </form>
+
+  <p id="count" aria-live="polite"></p>
+  <div id="results"></div>
+</main>
+
+<script src="/app.js"></script>
+<script>
+  requireLogin();
+  renderNav();
+
+  const msg = document.getElementById("msg");
+  const results = document.getElementById("results");
+  const count = document.getElementById("count");
+  const esc = (s) => { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; };
+
+  function card(j) {
+    return `<div class="card">
+      <h2>${esc(j.title)}</h2>
+      <p>${esc(j.company)} · ${esc(j.location)} · ${esc(j.employment_type)}</p>
+      <p>${esc(j.description)}</p>
+      <p>Skills: ${j.required_skills.map(esc).join(", ") || "none listed"}</p>
+      <a href="/match.html?job_id=${j.id}">Match my resume</a>
+      <button type="button" data-bookmark="${j.id}">Bookmark</button>
+      <button type="button" data-track="${j.id}">Track application</button>
+    </div>`;
+  }
+
+  async function search() {
+    const params = new URLSearchParams();
+    for (const id of ["q", "skill", "location", "employment_type"]) {
+      const v = document.getElementById(id).value.trim();
+      if (v) params.set(id, v);
+    }
+    const data = await api("/jobs?" + params.toString());
+    count.textContent = data.count + (data.count === 1 ? " job found" : " jobs found");
+    results.innerHTML = data.count
+      ? data.results.map(card).join("")
+      : "<p>No jobs match these filters. Try fewer filters.</p>";
+    results.querySelectorAll("[data-bookmark]").forEach((b) => b.onclick = async () => {
+      try { await api("/bookmarks", { method: "POST", json: { job_id: Number(b.dataset.bookmark) } }); showMessage(msg, "Bookmarked.", false); }
+      catch (err) { showMessage(msg, err.message, true); }
+    });
+    results.querySelectorAll("[data-track]").forEach((b) => b.onclick = async () => {
+      try { await api("/applications", { method: "POST", json: { job_id: Number(b.dataset.track) } }); showMessage(msg, "Added to My applications.", false); }
+      catch (err) { showMessage(msg, err.message, true); }
+    });
+  }
+
+  document.getElementById("search-form").onsubmit = (e) => {
+    e.preventDefault();
+    search().catch((err) => showMessage(msg, err.message, true));
+  };
+
+  search().catch((err) => showMessage(msg, err.message, true));
+</script>
+</body>
+</html>
