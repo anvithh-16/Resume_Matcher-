@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resume Matcher – Match</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <h1>Match my resume to a job</h1>
+  <div id="msg" aria-live="polite"></div>
+
+  <form id="match-form">
+    <label for="resume">My resume</label>
+    <select id="resume" required></select>
+
+    <label for="job">Job</label>
+    <select id="job" required></select>
+
+    <button type="submit">Calculate match</button>
+  </form>
+
+  <section id="result" aria-live="polite"></section>
+</main>
+
+<script src="/app.js"></script>
+<script>
+  requireLogin();
+  renderNav();
+
+  const msg = document.getElementById("msg");
+  const resumeSel = document.getElementById("resume");
+  const jobSel = document.getElementById("job");
+  const result = document.getElementById("result");
+  const params = new URLSearchParams(location.search);
+
+  const esc = (s) => { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; };
+  const list = (items, empty) => items && items.length
+    ? "<ul>" + items.map((i) => `<li>${esc(i)}</li>`).join("") + "</ul>"
+    : `<p><em>${empty}</em></p>`;
+  const pct = (x) => Math.round((x || 0) * 100) + "%";
+
+  async function loadOptions() {
+    const [resumes, jobs] = await Promise.all([api("/resumes"), api("/jobs?limit=100")]);
+    if (!resumes.resumes.length) {
+      result.innerHTML = '<p class="msg error">Upload a resume first: <a href="/resume.html">go to My resume</a>.</p>';
+      document.querySelector("#match-form button").disabled = true;
+      return;
+    }
+    resumeSel.innerHTML = resumes.resumes.map((r) => `<option value="${r.id}">${esc(r.filename)}</option>`).join("");
+    jobSel.innerHTML = jobs.results.map((j) => `<option value="${j.id}">${esc(j.title)} — ${esc(j.company)}</option>`).join("");
+    if (params.get("resume_id")) resumeSel.value = params.get("resume_id");
+    if (params.get("job_id")) jobSel.value = params.get("job_id");
+  }
+
+  document.getElementById("match-form").onsubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const m = await api("/matches", { method: "POST",
+        json: { resume_id: Number(resumeSel.value), job_id: Number(jobSel.value) } });
+      result.innerHTML = `<div class="card">
+        <h2>${esc(m.title)} — ${esc(m.company)}</h2>
+        <p style="font-size:2rem;margin:0"><strong>${m.score} / 100</strong></p>
+        <p>Skill overlap: ${pct(m.components.skill_overlap)} · Keyword similarity: ${pct(m.components.keyword_similarity)}</p>
+        <h3>Matched skills</h3>${list(m.matched_skills, "None of the required skills were found")}
+        <h3>Missing skills</h3>${list(m.missing_skills, "Nothing missing")}
+        <h3>Why</h3>${list(m.explanation, "No explanation available")}
+        <p><small>${esc(m.disclaimer)}</small></p>
+      </div>`;
+      showMessage(msg, "Match calculated.", false);
+    } catch (err) {
+      showMessage(msg, err.message, true);
+    }
+  };
+
+  loadOptions().catch((err) => showMessage(msg, err.message, true));
+</script>
+</body>
+</html>
