@@ -382,3 +382,7 @@ body.auth { min-height: 100vh; display: grid; place-items: start center; backgro
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+
+
+select option { background-color: #ffffff !important; color: #222222 !important; }
