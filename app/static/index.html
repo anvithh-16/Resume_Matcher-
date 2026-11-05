@@ -5,33 +5,63 @@
   <title>Resume Matcher – Sign in</title>
   <link rel="stylesheet" href="/style.css">
 </head>
-<body>
-<main>
+<body class="auth">
+<main class="auth-wrap">
+  <div class="auth-mark" aria-hidden="true">R</div>
   <h1>Resume Matcher</h1>
-  <p>Match scores are assistive signals, not hiring decisions.</p>
+  <p class="auth-sub">Find jobs that fit your resume, and see which skills you're missing.</p>
+
+  <div class="tabs" role="tablist" aria-label="Sign in or create an account">
+    <button type="button" role="tab" id="tab-login" aria-controls="login-form" aria-selected="true">Log in</button>
+    <button type="button" role="tab" id="tab-register" aria-controls="register-form" aria-selected="false" tabindex="-1">Create account</button>
+  </div>
+
   <div id="msg" aria-live="polite"></div>
-  <form id="login-form">
+
+  <form id="login-form" role="tabpanel" aria-labelledby="tab-login">
     <h2>Log in</h2>
     <label for="login-email">Email</label>
-    <input id="login-email" type="email" required autocomplete="email">
+    <input id="login-email" type="email" required autocomplete="email" placeholder="you@example.com">
     <label for="login-password">Password</label>
-    <input id="login-password" type="password" required autocomplete="current-password">
+    <input id="login-password" type="password" required autocomplete="current-password" placeholder="Your password">
     <button type="submit">Log in</button>
   </form>
-  <form id="register-form">
+
+  <form id="register-form" role="tabpanel" aria-labelledby="tab-register" hidden>
     <h2>Create an account</h2>
     <label for="reg-email">Email</label>
-    <input id="reg-email" type="email" required autocomplete="email">
+    <input id="reg-email" type="email" required autocomplete="email" placeholder="you@example.com">
     <label for="reg-password">Password (at least 8 characters)</label>
-    <input id="reg-password" type="password" minlength="8" required autocomplete="new-password">
-    <button type="submit">Register</button>
+    <input id="reg-password" type="password" minlength="8" required autocomplete="new-password" placeholder="At least 8 characters">
+    <button type="submit">Create account</button>
   </form>
+
+  <p class="auth-note">Match scores are assistive signals, not hiring decisions. Your resume is never shared without your consent.</p>
 </main>
 <script src="/app.js"></script>
 <script>
   const msg = document.getElementById("msg");
   const val = (id) => document.getElementById(id).value;
-  document.getElementById("login-form").onsubmit = async (e) => {
+  const tabs = { login: document.getElementById("tab-login"), register: document.getElementById("tab-register") };
+  const forms = { login: document.getElementById("login-form"), register: document.getElementById("register-form") };
+
+  function show(which, focus) {
+    for (const k of ["login", "register"]) {
+      const on = k === which;
+      tabs[k].setAttribute("aria-selected", on ? "true" : "false");
+      tabs[k].tabIndex = on ? 0 : -1;
+      forms[k].hidden = !on;
+    }
+    if (focus) tabs[which].focus();
+  }
+  tabs.login.onclick = () => show("login");
+  tabs.register.onclick = () => show("register");
+  document.querySelector(".tabs").addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight" || e.key === "ArrowLeft") show(tabs.login.getAttribute("aria-selected") === "true" ? "register" : "login", true);
+  });
+  if (location.hash === "#register") show("register");
+
+  forms.login.onsubmit = async (e) => {
     e.preventDefault();
     try {
       const r = await api("/auth/login", { method: "POST", json: { email: val("login-email"), password: val("login-password") } });
@@ -39,11 +69,14 @@
       location.href = "/resume.html";
     } catch (err) { showMessage(msg, err.message, true); }
   };
-  document.getElementById("register-form").onsubmit = async (e) => {
+  forms.register.onsubmit = async (e) => {
     e.preventDefault();
     try {
       await api("/auth/register", { method: "POST", json: { email: val("reg-email"), password: val("reg-password") } });
-      showMessage(msg, "Account created. Now log in above.", false);
+      document.getElementById("login-email").value = val("reg-email");
+      show("login");
+      document.getElementById("login-password").focus();
+      showMessage(msg, "Account created. Log in with your new password.", false);
     } catch (err) { showMessage(msg, err.message, true); }
   };
 </script>

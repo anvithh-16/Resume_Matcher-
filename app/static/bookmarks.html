@@ -6,8 +6,10 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<main>
+<main class="page">
+  <div class="page-icon" aria-hidden="true">🔖</div>
   <h1>Bookmarks</h1>
+  <p class="page-desc">Jobs you saved to look at later.</p>
   <div id="msg" aria-live="polite"></div>
   <div id="list"></div>
 </main>
@@ -18,26 +20,28 @@
   const msg = document.getElementById("msg");
   const list = document.getElementById("list");
 
-  function esc(s) {
-    const d = document.createElement("div");
-    d.textContent = s == null ? "" : String(s);
-    return d.innerHTML;
-  }
-
   async function load() {
     try {
       const data = await api("/bookmarks");
       if (!data.bookmarks.length) {
-        list.innerHTML = "<p>No bookmarks yet — bookmark jobs from the Jobs page.</p>";
+        list.innerHTML = `<div class="callout"><span class="callout-icon" aria-hidden="true">🔖</span>
+          <p>No bookmarks yet. Use Bookmark on any job in <a href="/jobs.html">Find jobs</a> or Recommendations.</p></div>`;
         return;
       }
-      list.innerHTML = data.bookmarks.map((b) => `
-        <div class="card">
-          <h2>${esc(b.title)}</h2>
-          <p>${esc(b.company)} · ${esc(b.location)}</p>
-          <a href="/match.html?job_id=${b.job_id}">Match</a>
-          <button type="button" data-id="${b.job_id}" aria-label="Remove bookmark for ${esc(b.title)}">Remove</button>
-        </div>`).join("");
+      list.innerHTML =
+        `<div class="view-head"><span class="view-name"><span aria-hidden="true">☰</span>Saved jobs</span>
+           <span class="view-count">${data.bookmarks.length}</span></div><div class="dblist">` +
+        data.bookmarks.map((b) => `
+        <div class="row">
+          <div>
+            <h2 class="row-title" style="font-size:15px;margin:0">${escHtml(b.title)}</h2>
+            <div class="row-meta">${escHtml(b.company)}, ${escHtml(b.location)}</div>
+          </div>
+          <div class="actions">
+            <a class="btn" href="/match.html?job_id=${b.job_id}">Match</a>
+            <button type="button" class="btn-danger" data-id="${b.job_id}" aria-label="Remove bookmark for ${escHtml(b.title)}">Remove</button>
+          </div>
+        </div>`).join("") + "</div>";
     } catch (err) { showMessage(msg, err.message, true); }
   }
 

@@ -7,36 +7,46 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<main>
-  <h1>Job recommendations</h1>
+<main class="page">
+  <div class="page-icon" aria-hidden="true">✨</div>
+  <h1>Recommendations</h1>
+  <p class="page-desc">The assistant reads your resume, searches the job list, scores every match and ranks the best ones. It never applies to jobs for you.</p>
   <div id="msg" aria-live="polite"></div>
 
-  <form id="rec-form">
-    <label for="resume">My resume</label>
-    <select id="resume" required></select>
-
-    <label for="location">Location (optional)</label>
-    <input id="location" type="text" placeholder="e.g. Bengaluru or Remote" autocomplete="off">
-
-    <label for="topk">How many</label>
-    <select id="topk">
-      <option value="3">3</option>
-      <option value="5" selected>5</option>
-      <option value="10">10</option>
-    </select>
-
+  <form id="rec-form" class="form-row">
+    <div>
+      <label for="resume">My resume</label>
+      <select id="resume" required></select>
+    </div>
+    <div>
+      <label for="location">Location (optional)</label>
+      <input id="location" type="text" placeholder="e.g. Bengaluru" autocomplete="off">
+    </div>
+    <div>
+      <label for="topk">How many</label>
+      <select id="topk">
+        <option value="3">3</option>
+        <option value="5" selected>5</option>
+        <option value="10">10</option>
+      </select>
+    </div>
     <button type="submit">Get recommendations</button>
   </form>
 
   <section id="results" aria-live="polite"></section>
 
-  <fieldset class="card">
-    <legend>AI explanations</legend>
-    <p id="notice"></p>
-    <input id="consent" type="checkbox">
-    <label for="consent" style="display:inline">Allow sending job titles and skill names to the AI provider</label>
-    <p>Provider configured: <strong id="configured">…</strong></p>
-  </fieldset>
+  <hr class="divider">
+  <section aria-labelledby="ai-title">
+    <h2 id="ai-title" style="margin-top:0;font-size:18px">AI explanations</h2>
+    <p class="muted" id="notice" style="margin-bottom:12px"></p>
+    <div class="callout" style="display:block">
+      <div class="switch-row">
+        <label for="consent">Allow sending job titles and skill names to the AI provider</label>
+        <span class="switch"><input id="consent" type="checkbox" role="switch"><span aria-hidden="true"></span></span>
+      </div>
+      <p class="muted" style="margin-top:8px">Provider configured: <strong id="configured">…</strong></p>
+    </div>
+  </section>
 </main>
 
 <script src="/app.js"></script>
@@ -50,23 +60,37 @@
   const consentBox = document.getElementById("consent");
   const params = new URLSearchParams(location.search);
 
-  const esc = (s) => { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; };
-  const list = (items, empty) => items && items.length
-    ? "<ul>" + items.map((i) => `<li>${esc(i)}</li>`).join("") + "</ul>"
-    : `<p><em>${empty}</em></p>`;
+  const STEP_TEXT = {
+    get_resume_profile: "Read the skills from your resume",
+    search_jobs: "Searched the job list for those skills",
+    score_jobs: "Scored each job against your resume",
+    rank_results: "Ranked the jobs by score",
+  };
 
   function card(r, i) {
-    return `<div class="card">
-      <h2>${i + 1}. ${esc(r.title)} — ${esc(r.company)}</h2>
-      <p>${esc(r.location)} · <strong>${r.score} / 100</strong></p>
-      ${(r.warnings || []).map((w) => `<p class="msg error">${esc(w)}</p>`).join("")}
-      <h3>Matched skills</h3>${list(r.matched_skills, "None")}
-      <h3>Missing skills</h3>${list(r.missing_skills, "Nothing missing")}
-      <h3>Why</h3>${list(r.explanation, "No explanation available")}
-      <button type="button" data-bookmark="${r.job_id}">Bookmark</button>
-      <button type="button" data-track="${r.job_id}">Track application</button>
-      <a href="/match.html?job_id=${r.job_id}&resume_id=${resumeSel.value}">Open full match</a>
-    </div>`;
+    return `<details class="toggle"${i === 0 ? " open" : ""}>
+      <summary>
+        <span class="row-title"><span class="rank">${i + 1}</span>${escHtml(r.title)}
+          <span class="row-meta" style="display:block;margin-left:18px">${escHtml(r.company)}, ${escHtml(r.location)}</span></span>
+        <span class="score ${scoreClass(r.score)}">${r.score}</span>
+      </summary>
+      <div class="toggle-body">
+        ${(r.warnings || []).map((w) => `<p class="msg error" role="note">${escHtml(w)}</p>`).join("")}
+        <div class="props">
+          <div class="prop"><div class="prop-key"><span aria-hidden="true">✅</span>Skills you have</div>
+            <div class="prop-val">${tagList(r.matched_skills, "green", "None")}</div></div>
+          <div class="prop"><div class="prop-key"><span aria-hidden="true">➕</span>Skills to learn</div>
+            <div class="prop-val">${tagList(r.missing_skills, "red", "Nothing missing")}</div></div>
+        </div>
+        <h3 style="font-size:15px">Why</h3>
+        ${bulletList(r.explanation, "No explanation available")}
+        <div class="actions">
+          <a class="btn" href="/match.html?job_id=${r.job_id}&resume_id=${resumeSel.value}">Open full match</a>
+          <button type="button" data-bookmark="${r.job_id}" aria-label="Bookmark ${escHtml(r.title)}">Bookmark</button>
+          <button type="button" data-track="${r.job_id}" aria-label="Track application for ${escHtml(r.title)}">Track application</button>
+        </div>
+      </div>
+    </details>`;
   }
 
   function wireButtons() {
@@ -82,18 +106,21 @@
 
   document.getElementById("rec-form").onsubmit = async (e) => {
     e.preventDefault();
-    results.innerHTML = "<p>Working…</p>";
+    results.innerHTML = '<p class="muted" style="margin-top:20px">Finding jobs for you…</p>';
     try {
       const loc = document.getElementById("location").value.trim();
       const body = await api("/recommendations", { method: "POST", json: {
         resume_id: Number(resumeSel.value), location: loc || null, top_k: Number(document.getElementById("topk").value) } });
       const recs = body.recommendations;
-      results.innerHTML = (recs.length ? recs.map(card).join("") : "") +
-        `<div class="card">
-           <p><strong>Steps the agent ran:</strong> ${esc(body.tool_trace.join(" → "))}</p>
-           <p><strong>External AI calls:</strong> ${body.external_calls}</p>
-           <p><small>${esc(body.note)}</small></p>
-         </div>`;
+      results.innerHTML =
+        `<div class="view-head"><span class="view-name"><span aria-hidden="true">☰</span>Top matches</span>
+           <span class="view-count">${recs.length} ${recs.length === 1 ? "job" : "jobs"}</span></div>` +
+        (recs.length ? '<div class="dblist">' + recs.map(card).join("") + "</div>" : "") +
+        `<div class="callout"><span class="callout-icon" aria-hidden="true">🤖</span><div>
+           <p><strong>How these were picked</strong></p>
+           <ol class="steps">${body.tool_trace.map((t) => `<li>${escHtml(STEP_TEXT[t] || t)} <code>${escHtml(t)}</code></li>`).join("")}</ol>
+           <p class="muted">External AI calls: ${body.external_calls}. ${escHtml(body.note)}</p>
+         </div></div>`;
       if (body.guidance) showMessage(msg, body.guidance, true);
       else showMessage(msg, recs.length + " recommendations ready.", false);
       wireButtons();
@@ -113,10 +140,11 @@
   async function init() {
     const [resumes, consent] = await Promise.all([api("/resumes"), api("/consent")]);
     if (!resumes.resumes.length) {
-      results.innerHTML = '<p class="msg error">Upload a resume first: <a href="/resume.html">go to My resume</a>.</p>';
+      results.innerHTML = `<div class="callout"><span class="callout-icon" aria-hidden="true">📄</span>
+        <p>Upload a resume first, then come back here. <a href="/resume.html">Go to My resume</a></p></div>`;
       document.querySelector("#rec-form button").disabled = true;
     } else {
-      resumeSel.innerHTML = resumes.resumes.map((r) => `<option value="${r.id}">${esc(r.filename)}</option>`).join("");
+      resumeSel.innerHTML = resumes.resumes.map((r) => `<option value="${r.id}">${escHtml(r.filename)}</option>`).join("");
       if (params.get("resume_id")) resumeSel.value = params.get("resume_id");
     }
     document.getElementById("notice").textContent = consent.notice;
