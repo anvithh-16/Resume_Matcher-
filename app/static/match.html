@@ -7,17 +7,21 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<main>
-  <h1>Match my resume to a job</h1>
+<main class="page">
+  <div class="page-icon" aria-hidden="true">🎯</div>
+  <h1>Match</h1>
+  <p class="page-desc">Pick one of your resumes and a job to see a score out of 100, the skills you already have, and the ones you're missing.</p>
   <div id="msg" aria-live="polite"></div>
 
-  <form id="match-form">
-    <label for="resume">My resume</label>
-    <select id="resume" required></select>
-
-    <label for="job">Job</label>
-    <select id="job" required></select>
-
+  <form id="match-form" class="form-row" style="grid-template-columns: 1fr 1.6fr auto">
+    <div>
+      <label for="resume">My resume</label>
+      <select id="resume" required></select>
+    </div>
+    <div>
+      <label for="job">Job</label>
+      <select id="job" required></select>
+    </div>
     <button type="submit">Calculate match</button>
   </form>
 
@@ -34,22 +38,22 @@
   const jobSel = document.getElementById("job");
   const result = document.getElementById("result");
   const params = new URLSearchParams(location.search);
+  const pct = (x) => Math.round((x || 0) * 100);
 
-  const esc = (s) => { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; };
-  const list = (items, empty) => items && items.length
-    ? "<ul>" + items.map((i) => `<li>${esc(i)}</li>`).join("") + "</ul>"
-    : `<p><em>${empty}</em></p>`;
-  const pct = (x) => Math.round((x || 0) * 100) + "%";
+  function prop(icon, key, value) {
+    return `<div class="prop"><div class="prop-key"><span aria-hidden="true">${icon}</span>${key}</div><div class="prop-val">${value}</div></div>`;
+  }
 
   async function loadOptions() {
     const [resumes, jobs] = await Promise.all([api("/resumes"), api("/jobs?limit=100")]);
     if (!resumes.resumes.length) {
-      result.innerHTML = '<p class="msg error">Upload a resume first: <a href="/resume.html">go to My resume</a>.</p>';
+      result.innerHTML = `<div class="callout"><span class="callout-icon" aria-hidden="true">📄</span>
+        <p>Upload a resume first, then come back here. <a href="/resume.html">Go to My resume</a></p></div>`;
       document.querySelector("#match-form button").disabled = true;
       return;
     }
-    resumeSel.innerHTML = resumes.resumes.map((r) => `<option value="${r.id}">${esc(r.filename)}</option>`).join("");
-    jobSel.innerHTML = jobs.results.map((j) => `<option value="${j.id}">${esc(j.title)} — ${esc(j.company)}</option>`).join("");
+    resumeSel.innerHTML = resumes.resumes.map((r) => `<option value="${r.id}">${escHtml(r.filename)}</option>`).join("");
+    jobSel.innerHTML = jobs.results.map((j) => `<option value="${j.id}">${escHtml(j.title)} — ${escHtml(j.company)}</option>`).join("");
     if (params.get("resume_id")) resumeSel.value = params.get("resume_id");
     if (params.get("job_id")) jobSel.value = params.get("job_id");
   }
@@ -59,15 +63,34 @@
     try {
       const m = await api("/matches", { method: "POST",
         json: { resume_id: Number(resumeSel.value), job_id: Number(jobSel.value) } });
-      result.innerHTML = `<div class="card">
-        <h2>${esc(m.title)} — ${esc(m.company)}</h2>
-        <p style="font-size:2rem;margin:0"><strong>${m.score} / 100</strong></p>
-        <p>Skill overlap: ${pct(m.components.skill_overlap)} · Keyword similarity: ${pct(m.components.keyword_similarity)}</p>
-        <h3>Matched skills</h3>${list(m.matched_skills, "None of the required skills were found")}
-        <h3>Missing skills</h3>${list(m.missing_skills, "Nothing missing")}
-        <h3>Why</h3>${list(m.explanation, "No explanation available")}
-        <p><small>${esc(m.disclaimer)}</small></p>
-      </div>`;
+      const overlap = pct(m.components.skill_overlap), sim = pct(m.components.keyword_similarity);
+      result.innerHTML = `<article class="result-page">
+        <h2>${escHtml(m.title)}</h2>
+        <p class="muted">${escHtml(m.company)}</p>
+        <div class="props" style="margin-top:18px">
+          ${prop("📊", "Match score", `<div class="big-score">${m.score}<small> / 100</small></div>
+              <div class="bar" role="img" aria-label="Score ${m.score} out of 100"><i style="width:${Math.min(100, m.score)}%"></i></div>`)}
+          ${prop("🧩", "Skill overlap", `${overlap}%`)}
+          ${prop("🔤", "Keyword similarity", `${sim}%`)}
+          ${prop("✅", "Skills you have", tagList(m.matched_skills, "green", "None of the required skills were found"))}
+          ${prop("➕", "Skills to learn", tagList(m.missing_skills, "red", "Nothing missing"))}
+        </div>
+        <h3>Why this score</h3>
+        ${bulletList(m.explanation, "No explanation available")}
+        <div class="callout"><span class="callout-icon" aria-hidden="true">ℹ️</span><p>${escHtml(m.disclaimer)}</p></div>
+        <div class="actions">
+          <button type="button" data-bookmark="${m.job_id}">Bookmark this job</button>
+          <button type="button" data-track="${m.job_id}">Track application</button>
+        </div>
+      </article>`;
+      result.querySelector("[data-bookmark]").onclick = async () => {
+        try { await api("/bookmarks", { method: "POST", json: { job_id: m.job_id } }); showMessage(msg, "Bookmarked.", false); }
+        catch (err) { showMessage(msg, err.message, true); }
+      };
+      result.querySelector("[data-track]").onclick = async () => {
+        try { await api("/applications", { method: "POST", json: { job_id: m.job_id } }); showMessage(msg, "Added to My applications.", false); }
+        catch (err) { showMessage(msg, err.message, true); }
+      };
       showMessage(msg, "Match calculated.", false);
     } catch (err) {
       showMessage(msg, err.message, true);

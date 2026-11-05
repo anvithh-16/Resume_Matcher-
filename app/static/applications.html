@@ -7,9 +7,10 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<main>
+<main class="page wide board-page">
+  <div class="page-icon" aria-hidden="true">🗂️</div>
   <h1>My applications</h1>
-  <p>This only tracks your progress. The system never submits applications for you.</p>
+  <p class="page-desc">Keep track of where each application stands. This board only records your progress; the system never submits applications for you.</p>
   <div id="msg" aria-live="polite"></div>
   <div id="list"></div>
 </main>
@@ -21,33 +22,42 @@
 
   const msg = document.getElementById("msg");
   const list = document.getElementById("list");
-  const esc = (s) => { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; };
+  const label = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
-  function row(a, statuses) {
-    const opts = statuses.map((s) => `<option value="${s}"${s === a.status ? " selected" : ""}>${s}</option>`).join("");
-    return `<tr>
-      <td>${esc(a.title)}</td>
-      <td>${esc(a.company)}</td>
-      <td><label for="status-${a.id}" class="sr-only">Status for ${esc(a.title)}</label>
-          <select id="status-${a.id}">${opts}</select></td>
-      <td><label for="notes-${a.id}" class="sr-only">Notes for ${esc(a.title)}</label>
-          <input id="notes-${a.id}" type="text" value="${esc(a.notes || "")}" maxlength="1000"></td>
-      <td>${esc(new Date(a.updated_at).toLocaleString())}</td>
-      <td><button type="button" data-save="${a.id}">Save</button></td>
-    </tr>`;
+  function bcard(a, statuses) {
+    const opts = statuses.map((s) => `<option value="${s}"${s === a.status ? " selected" : ""}>${label(s)}</option>`).join("");
+    return `<article class="bcard">
+      <h2>${escHtml(a.title)}</h2>
+      <div class="meta">${escHtml(a.company)}</div>
+      <label for="status-${a.id}">Status<span class="sr-only"> for ${escHtml(a.title)}</span></label>
+      <select id="status-${a.id}">${opts}</select>
+      <label for="notes-${a.id}">Notes<span class="sr-only"> for ${escHtml(a.title)}</span></label>
+      <input id="notes-${a.id}" type="text" value="${escHtml(a.notes || "")}" maxlength="1000" placeholder="Add a note">
+      <div class="actions">
+        <span class="updated">Updated ${escHtml(new Date(a.updated_at).toLocaleDateString(undefined, { day: "numeric", month: "short" }))}</span>
+        <button type="button" data-save="${a.id}" aria-label="Save ${escHtml(a.title)}">Save</button>
+      </div>
+    </article>`;
   }
 
   async function load() {
     const data = await api("/applications");
     if (!data.applications.length) {
-      list.innerHTML = "<p>You are not tracking any applications yet. Use Track application on the Jobs page.</p>";
+      list.innerHTML = `<div class="callout"><span class="callout-icon" aria-hidden="true">🗂️</span>
+        <p>You are not tracking any applications yet. Use Track on a job in <a href="/jobs.html">Find jobs</a> to add one.</p></div>`;
       return;
     }
-    list.innerHTML = `<table>
-      <caption>Jobs you are tracking</caption>
-      <thead><tr><th scope="col">Job</th><th scope="col">Company</th><th scope="col">Status</th>
-        <th scope="col">Notes</th><th scope="col">Updated</th><th scope="col">Save</th></tr></thead>
-      <tbody>${data.applications.map((a) => row(a, data.statuses)).join("")}</tbody></table>`;
+    list.innerHTML =
+      `<div class="view-head"><span class="view-name"><span aria-hidden="true">▥</span>Board</span>
+         <span class="view-count">${data.applications.length} tracked</span></div>
+       <div class="board">` +
+      data.statuses.map((s) => {
+        const items = data.applications.filter((a) => a.status === s);
+        return `<section class="lane" aria-label="${label(s)}">
+          <div class="lane-head"><span class="tag ${STATUS_COLORS[s] || "gray"}">${label(s)}</span><span class="lane-count">${items.length}</span></div>
+          <div class="lane-cards">${items.length ? items.map((a) => bcard(a, data.statuses)).join("") : '<p class="lane-empty">No applications</p>'}</div>
+        </section>`;
+      }).join("") + "</div>";
     list.querySelectorAll("[data-save]").forEach((b) => b.onclick = async () => {
       const id = b.dataset.save;
       try {
@@ -62,11 +72,5 @@
 
   load().catch((err) => showMessage(msg, err.message, true));
 </script>
-<style>
-  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  table { border-collapse: collapse; width: 100%; }
-  th, td { border-bottom: 1px solid #ccc; padding: 6px; text-align: left; vertical-align: middle; }
-  td label.sr-only { display: inline; margin: 0; }
-</style>
 </body>
 </html>

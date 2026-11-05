@@ -7,17 +7,26 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<main>
+<main class="page">
+  <div class="page-icon" aria-hidden="true">📄</div>
   <h1>My resume</h1>
+  <p class="page-desc">Upload your resume and check what we read from it. Matching and recommendations use the skills listed here, so fix anything that's wrong.</p>
   <div id="msg" aria-live="polite"></div>
 
   <form id="upload-form">
-    <label for="file">Resume file (PDF, DOCX or TXT, max 2 MB)</label>
-    <input id="file" type="file" accept=".pdf,.docx,.txt" required>
-    <button type="submit">Upload and parse</button>
+    <div class="dropzone" id="drop">
+      <label for="file"><span class="dropzone-title">Choose a resume file or drop it here</span></label>
+      <span class="muted">PDF, DOCX or TXT, up to 2 MB</span>
+      <span class="dropzone-file" id="file-name" aria-live="polite"></span>
+      <input id="file" type="file" accept=".pdf,.docx,.txt" required>
+    </div>
+    <div class="actions"><button type="submit">Upload and read resume</button></div>
   </form>
 
-  <h2>My uploaded resumes</h2>
+  <div class="view-head">
+    <h2 class="view-name" style="margin:0">Uploaded resumes</h2>
+    <span class="view-count" id="resume-count"></span>
+  </div>
   <div id="list"></div>
 </main>
 
@@ -28,27 +37,53 @@
 
   const msg = document.getElementById("msg");
   const list = document.getElementById("list");
-  const esc = (s) => { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; };
-  const section = (title, items) => `<h3>${title}</h3>` + (items && items.length
-    ? "<ul>" + items.map((i) => `<li>${esc(i)}</li>`).join("") + "</ul>"
-    : "<p><em>Not found in your resume</em></p>");
+  const fileInput = document.getElementById("file");
+  const drop = document.getElementById("drop");
+
+  fileInput.onchange = () => {
+    document.getElementById("file-name").textContent = fileInput.files[0] ? fileInput.files[0].name : "";
+  };
+  ["dragenter", "dragover"].forEach((t) => drop.addEventListener(t, () => drop.classList.add("over")));
+  ["dragleave", "drop"].forEach((t) => drop.addEventListener(t, () => drop.classList.remove("over")));
+
+  function prop(icon, key, value) {
+    return `<div class="prop"><div class="prop-key"><span aria-hidden="true">${icon}</span>${key}</div><div class="prop-val">${value}</div></div>`;
+  }
 
   function card(r) {
     const p = r.profile || {}, c = p.contact || {};
-    return `<div class="card">
-      <h2>${esc(r.filename)}</h2>
-      ${(p.warnings || []).map((w) => `<p class="msg error">${esc(w)}</p>`).join("")}
-      ${section("Skills", p.skills)}${section("Education", p.education)}${section("Experience", p.experience)}
-      <p>Email: ${esc(c.email || "not found")} · Phone: ${esc(c.phone || "not found")}</p>
-      <p><a href="/match.html?resume_id=${r.id}">Match against a job</a> ·
-         <a href="/recommend.html?resume_id=${r.id}">Get recommendations</a></p>
-      <button type="button" data-del="${r.id}">Delete this resume and its data</button>
-    </div>`;
+    const uploaded = new Date(r.created_at).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+    return `<article class="doc">
+      <h2><span aria-hidden="true">📄</span>${escHtml(r.filename)}</h2>
+      ${(p.warnings || []).map((w) => `<p class="msg error" role="note">${escHtml(w)}</p>`).join("")}
+      <div class="props">
+        ${prop("✉️", "Email", c.email ? escHtml(c.email) : '<span class="empty-val">Not found</span>')}
+        ${prop("📞", "Phone", c.phone ? escHtml(c.phone) : '<span class="empty-val">Not found</span>')}
+        ${prop("🗓️", "Uploaded", escHtml(uploaded))}
+        ${prop("🏷️", "Skills", tagList(p.skills, null, "No skills found"))}
+      </div>
+      <form class="skill-edit" data-fix="${r.id}">
+        <label for="skills-${r.id}" class="sr-only">Skills for ${escHtml(r.filename)}, separated by commas</label>
+        <input id="skills-${r.id}" type="text" value="${escHtml((p.skills || []).join(", "))}" placeholder="python, sql, git">
+        <button type="submit" class="btn-secondary">Save skills</button>
+      </form>
+      <h3>Education</h3>${bulletList(p.education, "Not found in your resume")}
+      <h3>Experience</h3>${bulletList(p.experience, "Not found in your resume")}
+      <div class="actions">
+        <a class="btn btn-primary" href="/recommend.html?resume_id=${r.id}">Get recommendations</a>
+        <a class="btn" href="/match.html?resume_id=${r.id}">Match against a job</a>
+        <button type="button" class="btn-danger" data-del="${r.id}">Delete this resume and its data</button>
+      </div>
+    </article>`;
   }
 
   async function load() {
     const data = await api("/resumes");
-    list.innerHTML = data.resumes.length ? data.resumes.map(card).join("") : "<p>No resume uploaded yet.</p>";
+    document.getElementById("resume-count").textContent = data.resumes.length ? String(data.resumes.length) : "";
+    list.innerHTML = data.resumes.length
+      ? data.resumes.map(card).join("")
+      : `<div class="callout"><span class="callout-icon" aria-hidden="true">💡</span>
+           <p>No resume uploaded yet. Upload one above to see your skills and get job matches.</p></div>`;
     list.querySelectorAll("[data-del]").forEach((b) => b.onclick = async () => {
       if (!confirm("Delete this resume and all extracted data?")) return;
       try {
@@ -57,16 +92,29 @@
         load();
       } catch (err) { showMessage(msg, err.message, true); }
     });
+    list.querySelectorAll("[data-fix]").forEach((f) => f.onsubmit = async (e) => {
+      e.preventDefault();
+      const id = f.dataset.fix;
+      const r = data.resumes.find((x) => String(x.id) === id);
+      const skills = document.getElementById("skills-" + id).value.split(",").map((s) => s.trim()).filter(Boolean);
+      try {
+        await api(`/resumes/${id}/profile`, { method: "PUT", json: {
+          skills, education: (r.profile || {}).education || [], experience: (r.profile || {}).experience || [] } });
+        showMessage(msg, "Skills saved.", false);
+        load();
+      } catch (err) { showMessage(msg, err.message, true); }
+    });
   }
 
   document.getElementById("upload-form").onsubmit = async (e) => {
     e.preventDefault();
     const fd = new FormData();
-    fd.append("file", document.getElementById("file").files[0]);
+    fd.append("file", fileInput.files[0]);
     try {
       await api("/resumes", { method: "POST", body: fd });
-      showMessage(msg, "Uploaded. Please review the extracted fields below.", false);
+      showMessage(msg, "Uploaded. Check the details we read from your resume below.", false);
       e.target.reset();
+      document.getElementById("file-name").textContent = "";
       load();
     } catch (err) { showMessage(msg, err.message, true); }
   };

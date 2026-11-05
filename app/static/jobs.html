@@ -7,33 +7,42 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<main>
+<main class="page wide">
+  <div class="page-icon" aria-hidden="true">🔎</div>
   <h1>Find jobs</h1>
+  <p class="page-desc">Search the job list by keyword, skill, location or job type. Open any job to see how well your resume matches it.</p>
   <div id="msg" aria-live="polite"></div>
 
-  <form id="search-form">
-    <label for="q">Keyword</label>
-    <input id="q" type="text" placeholder="e.g. developer" autocomplete="off">
-
-    <label for="skill">Skill</label>
-    <input id="skill" type="text" placeholder="e.g. python" autocomplete="off">
-
-    <label for="location">Location</label>
-    <input id="location" type="text" placeholder="e.g. Bengaluru or Remote" autocomplete="off">
-
-    <label for="employment_type">Job type</label>
-    <select id="employment_type">
-      <option value="">Any</option>
-      <option value="full-time">Full-time</option>
-      <option value="part-time">Part-time</option>
-      <option value="internship">Internship</option>
-      <option value="contract">Contract</option>
-    </select>
-
+  <form id="search-form" class="filters">
+    <div>
+      <label for="q">Keyword</label>
+      <input id="q" type="text" placeholder="e.g. developer" autocomplete="off">
+    </div>
+    <div>
+      <label for="skill">Skill</label>
+      <input id="skill" type="text" placeholder="e.g. python" autocomplete="off">
+    </div>
+    <div>
+      <label for="location">Location</label>
+      <input id="location" type="text" placeholder="e.g. Bengaluru" autocomplete="off">
+    </div>
+    <div>
+      <label for="employment_type">Job type</label>
+      <select id="employment_type">
+        <option value="">Any</option>
+        <option value="full-time">Full-time</option>
+        <option value="part-time">Part-time</option>
+        <option value="internship">Internship</option>
+        <option value="contract">Contract</option>
+      </select>
+    </div>
     <button type="submit">Search</button>
   </form>
 
-  <p id="count" aria-live="polite"></p>
+  <div class="view-head">
+    <span class="view-name"><span aria-hidden="true">▦</span>Gallery</span>
+    <span class="view-count" id="count" aria-live="polite"></span>
+  </div>
   <div id="results"></div>
 </main>
 
@@ -45,18 +54,20 @@
   const msg = document.getElementById("msg");
   const results = document.getElementById("results");
   const count = document.getElementById("count");
-  const esc = (s) => { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; };
 
   function card(j) {
-    return `<div class="card">
-      <h2>${esc(j.title)}</h2>
-      <p>${esc(j.company)} · ${esc(j.location)} · ${esc(j.employment_type)}</p>
-      <p>${esc(j.description)}</p>
-      <p>Skills: ${j.required_skills.map(esc).join(", ") || "none listed"}</p>
-      <a href="/match.html?job_id=${j.id}">Match my resume</a>
-      <button type="button" data-bookmark="${j.id}">Bookmark</button>
-      <button type="button" data-track="${j.id}">Track application</button>
-    </div>`;
+    return `<article class="gcard">
+      <h2>${escHtml(j.title)}</h2>
+      <div class="meta">${escHtml(j.company)}, ${escHtml(j.location)}</div>
+      <ul class="tags"><li class="tag ${TYPE_COLORS[j.employment_type] || "gray"}">${escHtml(j.employment_type)}</li></ul>
+      <p class="desc">${escHtml(j.description)}</p>
+      ${tagList(j.required_skills, null, "No skills listed")}
+      <div class="actions">
+        <a class="btn" href="/match.html?job_id=${j.id}">Match my resume</a>
+        <button type="button" data-bookmark="${j.id}" aria-label="Bookmark ${escHtml(j.title)}">Bookmark</button>
+        <button type="button" data-track="${j.id}" aria-label="Track application for ${escHtml(j.title)}">Track</button>
+      </div>
+    </article>`;
   }
 
   async function search() {
@@ -68,8 +79,9 @@
     const data = await api("/jobs?" + params.toString());
     count.textContent = data.count + (data.count === 1 ? " job found" : " jobs found");
     results.innerHTML = data.count
-      ? data.results.map(card).join("")
-      : "<p>No jobs match these filters. Try fewer filters.</p>";
+      ? '<div class="gallery">' + data.results.map(card).join("") + "</div>"
+      : `<div class="callout"><span class="callout-icon" aria-hidden="true">🔍</span>
+           <p>No jobs match these filters. Remove a filter or try a broader skill name.</p></div>`;
     results.querySelectorAll("[data-bookmark]").forEach((b) => b.onclick = async () => {
       try { await api("/bookmarks", { method: "POST", json: { job_id: Number(b.dataset.bookmark) } }); showMessage(msg, "Bookmarked.", false); }
       catch (err) { showMessage(msg, err.message, true); }
