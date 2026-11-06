@@ -26,3 +26,15 @@
 - Test: tests/test_reliability.py (TC-14), 100 consecutive valid match requests
 - Result: 100/100 valid (target >= 99) -> PASS
 - Evidence: docs/evidence/tc14.txt
+
+## NFR-10 Agent / LLM workflow performance (owner: Anirudh N)
+- machine: Windows 11 AMD64; Python 3.14.6
+- command: python scripts/perf_recommend.py --users 20 --requests 200
+- requests=200 ok=200 users=20 p50=1.143s p95=1.332s max=1.609s (no external provider)
+- tool budget: every response used exactly 4 tools in order -> yes
+- external calls without consent: 0 (must be 0)
+- repeatable ranking across all requests: yes (1 distinct ranking(s))
+- error rate: 0.0%
+- target: p95 <= 5 s, 0% errors, 4 tools, 0 external calls, repeatable
+- NFR-10 PASS
+- Evidence: docs/evidence/nfr10_recommend_load.txt
