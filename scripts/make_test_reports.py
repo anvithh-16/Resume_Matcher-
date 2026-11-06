@@ -62,6 +62,9 @@ MODULE_UNDER_TEST = {
     "test_reliability.py": "routers/matches.py, services/matching.py",
     "test_resumes.py": "routers/resumes.py, services/parser.py, services/resume_service.py",
     "test_skills.py": "services/skills.py",
+    "test_branches.py": "agent/orchestrator.py, agent/tools.py, agent/provider.py, services/job_service.py, "
+                        "services/resume_service.py, services/parser.py",
+    "test_spoofing.py": "core/security.py (JWT verification), routers/auth.py",
 }
 
 
@@ -69,7 +72,7 @@ GIT_NAMES = {"anvithh-16": "Anvith Vegi"}   # GitHub handles -> real names
 
 
 def run(cmd, **kw):
-    return subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, **kw)
+    return subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace", **kw)
 
 
 def version(pkg):
